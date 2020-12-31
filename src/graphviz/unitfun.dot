@@ -1,0 +1,19 @@
+digraph {
+    bgcolor=transparent
+    rankdir=LR
+    rank=same
+
+    // Default theme: enabled
+    node[shape="rectangle" style="rounded,filled" color="#2980B9" fillcolor="#b2ebf2" fontcolor="#000000" fontname="Segoe UI,Roboto,Helvetica,Arial,sans-serif"]
+    edge [color="#2980B9" fontcolor="#000000" fontname="Segoe UI,Roboto,Helvetica,Arial,sans-serif" fontsize=11 fontsize=11]
+
+    subgraph FO_graph {
+        UF[label="UnitFun[C]"]
+        U[label="Unit => C"]
+    }
+
+    U -> C[label="apply"]
+    UF -> U[label="f"]
+    UF -> C[label="apply"]
+    UF -> String[label="toString"]
+}

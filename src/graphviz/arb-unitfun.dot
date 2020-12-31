@@ -1,0 +1,17 @@
+strict digraph {
+    bgcolor=transparent
+    rankdir=LR
+    rank=same
+
+    // Default theme: enabled
+    node[shape="rectangle" style="rounded,filled" color="#2980B9" fillcolor="#b2ebf2" fontcolor="#000000" fontname="Segoe UI,Roboto,Helvetica,Arial,sans-serif"]
+    edge [color="#2980B9" fontcolor="#000000" fontname="Segoe UI,Roboto,Helvetica,Arial,sans-serif" fontsize=11 fontsize=11]
+
+    Seed
+    UF[label="UnitFun[C]"]
+    U[label="Unit => C"]
+
+    Seed -> U[label="gen"]
+    U -> UF[label="UnitFun"]
+    UF -> U[label="<:"]
+}

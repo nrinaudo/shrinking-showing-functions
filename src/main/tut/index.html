@@ -1,0 +1,8954 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>Shrinking and showing functions (in Scala)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    </head>
+    <body>
+        <textarea id="source">
+class: center, middle
+
+# Shrinking and showing functions
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+```tut:invisible
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    `xs: List[Int]`,
+    `ys: List[Int]`
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    `xs.reverse ++ ys.reverse` == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == `(xs ++ ys).reverse`
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```tut:book
+validate(propReverseAppend)
+```
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```scala
+validate(propReverseAppend)
+// ✖ Failed with:
+//  - `ARG_0: List(2147483647, -416991762, 1919426110, 214748364…`
+//  - `ARG_1: List(1983671757, 1143650104, -756315050, 181756746…`
+```
+
+---
+
+## A simple property
+
+.diff-rm[
+```scala
+*val propReverseAppend = forAll`NoShrink` { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+]
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAll { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+--
+
+```tut:book
+validate(propReverseAppend)
+```
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAll { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```scala
+validate(propReverseAppend)
+// ✖ Failed with:
+//  - `ARG_0: List(0)`
+//  - `ARG_1: List(1)`
+```
+
+---
+
+## Random functions
+
+```tut:silent
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    `is: List[Int]`,
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    `f : Int => Int`,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    `p : Int => Boolean`
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    `is.filter(p).map(f)` == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == `is.map(f).filter(p)`
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+```tut:book
+validate(propMapFilter)
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+```scala
+validate(propMapFilter)
+// ✖ Failed with:
+//  - ARG_0: List(1)
+//  - `ARG_1: <function>`
+//  - `ARG_2: <function>`
+```
+
+---
+
+class: center, middle
+
+# Shrinking and showing functions
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
+# Shrinking and showing functions (in Scala)
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
+# `Unit => C`
+
+---
+
+## Testing `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (`f: Unit => Int`) =>
+  f() == 0
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  `f() == 0`
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Showing `Unit => C`
+
+.center[![UnitFun](img/unitfun.svg)]
+
+---
+
+## Showing `Unit => C`
+
+```tut:silent
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class `UnitFun`[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  `f: Unit => C`
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends `(Unit => C)` {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def `apply(u: Unit)` =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    `f()`
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def `toString` =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{`() => ${f()}`}"
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Testing `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Generating `Unit => C`
+
+.center[![Arbitrary UnitFun](img/arb-unitfun.svg)]
+
+
+---
+
+## Generating `Unit => C`
+
+```tut:silent
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  `Arbitrary[UnitFun[C]]` {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.`function1[Unit, C]`(arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(`f => UnitFun(f)`)
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Generating `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Generating `Unit => C`
+
+.center[![Arbitrary UnitFun](img/arb-unitfun.svg)]
+
+---
+
+## Generating `Unit => C`
+
+```tut:silent
+implicit def arbUnitToC[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    arbitrary[UnitFun[C]]
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+implicit def arbUnitToC[C: Arbitrary] =
+  `Arbitrary[Unit => C]` {
+    arbitrary[UnitFun[C]]
+  }
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+implicit def arbUnitToC[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    `arbitrary[UnitFun[C]]`
+  }
+```
+
+
+---
+
+## Generating `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Generating `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1862882517}`
+```
+
+---
+
+## Shrinking `Unit => C`
+
+.center[![Shrinking UnitFun](img/shrink-unitfun.svg)]
+
+---
+
+## Shrinking `Unit => C`
+
+.center[![Shrinking UnitFun](img/shrink-unit2c.svg)]
+
+---
+
+## Shrinking `Unit => C`
+
+```tut:silent
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  `Shrink[Unit => C]` {
+    case UnitFun(f) =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    `case UnitFun(f)` =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      `shrink(f())`.map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).map(`c => UnitFun(_ => c)`)
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    `case _`          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      `Stream.empty`
+  }
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Key takeaways
+
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Unit => C`.
+--
+
+* shrink a `Unit => C`.
+--
+
+* ... but only because its domain was of size 1.
+
+
+---
+
+class: center, middle
+
+# `Boolean => C`
+
+---
+
+## Testing `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (`f: Boolean => Int`) =>
+  f(true) == f(false)
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  `f(true) == f(false)`
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Showing `Boolean => C`
+
+```tut:silent
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class `BoolFun`[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  `f: Boolean => C`
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends `(Boolean => C)` {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def `apply(b: Boolean)` =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    `f(b)`
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def `toString` =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{`true => ${f(true)}`, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, `false => ${f(false)}`}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+
+---
+
+## Generating `Boolean => C`
+
+```tut:silent
+implicit def arbBoolFun[C: Arbitrary] =
+  Arbitrary[BoolFun[C]] {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(f => BoolFun(f))
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+implicit def arbBoolFun[C: Arbitrary] =
+  `Arbitrary[BoolFun[C]]` {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(f => BoolFun(f))
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+implicit def arbBoolFun[C: Arbitrary] =
+  Arbitrary[BoolFun[C]] {
+    Gen.`function1[Boolean, C]`(arbitrary[C]).
+      map(f => BoolFun(f))
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+implicit def arbBoolFun[C: Arbitrary] =
+  Arbitrary[BoolFun[C]] {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(`f => BoolFun(f)`)
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```tut:silent
+implicit def arbBoolToC[C: Arbitrary] =
+  Arbitrary[Boolean => C] {
+    arbitrary[BoolFun[C]]
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+implicit def arbBoolToC[C: Arbitrary] =
+  `Arbitrary[Boolean => C]` {
+    arbitrary[BoolFun[C]]
+  }
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+implicit def arbBoolToC[C: Arbitrary] =
+  Arbitrary[Boolean => C] {
+    `arbitrary[BoolFun[C]]`
+  }
+```
+
+
+
+---
+
+## Generating `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Generating `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 2147483647, false => 1862882517}`
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```tut:silent
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  `Shrink[Boolean => C]` {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    `case BoolFun(f)` =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      `shrink(f(true))`.map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(`c => copy(onTrue = c)`)   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      `shrink(f(false))`.map(c => copy(onFalse = c))
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(`c => copy(onFalse = c)`)
+
+    case _ =>
+      Stream.empty
+  }
+```
+
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    `case _` =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
+
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
+
+      shrink(f(true)).map(c => copy(onTrue = c))   #:::
+      shrink(f(false)).map(c => copy(onFalse = c))
+
+    case _ =>
+      `Stream.empty`
+  }
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 0, false => 1}`
+```
+
+---
+
+## Key takeaways
+
+
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Boolean => C`.
+--
+
+* shrink a `Boolean => C`.
+
+--
+
+There is a lot of common code with `Unit => C`.
+
+---
+
+class: center, middle
+
+# `A =>> C`
+
+
+```tut:invisible:reset
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+---
+
+## `A =>> C`
+
+```tut:silent
+case class BoolFun[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*case class `BoolFun`[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*case class `=>>`[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```tut:silent
+case class =>>[C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[C](
+  f: `Boolean` => C
+) extends (`Boolean` => C) {
+
+  override def apply(b: `Boolean`) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*case class =>>[`A, `C](
+  f: Boolean => C
+) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+case class =>>[A, C](
+* f: `Boolean` => C
+) extends (`Boolean` => C) {
+
+* override def apply(`b: Boolean`) =
+*   f(`b`)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+case class =>>[A, C](
+* f: `A` => C
+) extends (`A` => C) {
+
+* override def apply(`a: A`) =
+*   f(`a`)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  override def toString =
+    s"{true => ${`f(true)`}, false => ${`f(false)`}}"
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+* `def table: List[A] = ???`
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+*   `s"{true => ${f(true)}, false => ${f(false)}}"`
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+*   `table.`
+*     `map { a => s"$a => ${f(a)}" }.`
+*     `mkString("{", ", ", "}")`
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    `table.`
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"`$a => ${f(a)}`" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      `mkString("{", ", ", "}")`
+}
+```
+
+
+---
+
+## `A =>> C`
+
+```tut:silent
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  `def table: List[A] = ???`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+* def table: List[A]` = ???`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*&#x200B;`case class` =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*&#x200B;`trait` =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```tut:silent:fail
+trait =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C](
+  f: A => C
+) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+// `error: traits or objects may not have parameters`
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*trait =>>[A, C]`(`
+* `f: A => C`
+*&#x200B;`)` extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  override def apply(a: A) =
+    `f(a)`
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* `override def apply(a: A) =`
+*   `f(a)`
+*
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${`f(a)`}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* def table: `List[A]`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* def table: `List[(A, C)]`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { `a` => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { `case (a, c)` => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { case (a, c) => s"$a => `${f(a)}`" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { case (a, c) => s"$a => `$c`" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## `Unit =>> C`
+
+.diff-rm[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+*) extends (Unit `=>` C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+*) extends (Unit `=>>` C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+]
+
+
+---
+
+## `Unit =>> C`
+
+.diff-rm[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+* `override def toString =`
+*   `s"{() => ${f()}}"`
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+* `override def table =`
+*   `List(() -> f())`
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(`() -> f()`)
+}
+```
+
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+}
+```
+
+```tut:invisible
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+
+implicit def arbUnitToC[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    arbitrary[UnitFun[C]]
+  }
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1862882517}`
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+*
+* `def shrink: Stream[A =>> C]`
+}
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink: Stream[A =>> C]
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+}
+```
+
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+*
+* `override def shrink =`
+*   `shrink(f()).map(c => UnitFun(_ => c))`
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    `shrink(f())`.map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    shrink(f()).map(c => `UnitFun(_ => c)`)
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    `shrink(f())`.map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink: Stream[A =>> C]
+}
+```
+
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+* def shrink(`shrinkC: C => Stream[C]`): Stream[A =>> C]
+}
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    shrink(f()).map(c => UnitFun(_ => c))
+}
+```
+
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+* override def shrink(`shrinkC: C => Stream[C]`) =
+    shrink(f()).map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+*   `shrink(f())`.map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+*   `shrinkC(f())`.map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```tut:silent
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinkC(f()).map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```tut:silent
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+*   case `UnitFun(f)` =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+*   case `f: UnitFun[C]` =>
+      shrink(f()).map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+*     `shrink(f()).map(c => UnitFun(_ => c))`
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+*     `f.shrink(shrink[C])`
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```tut:silent
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+```tut:invisible
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+
+implicit def arbUnitToC[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    arbitrary[UnitFun[C]]
+  }
+```
+
+---
+
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+*implicit def `shrinkUnit`[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+*implicit def `shrinkFun`[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[Unit => C] {
+*   case f: `UnitFun[C]` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[Unit => C] {
+*   case f: `(Unit =>> C)` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[`Unit` => C] {
+    case f: (`Unit` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+*implicit def shrinkFun[`A, `C: Shrink] =
+  Shrink[Unit => C] {
+    case f: (Unit =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+* Shrink[`Unit` => C] {
+*   case f: (`Unit` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+* Shrink[`A` => C] {
+*   case f: (`A` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+    case f: (A =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+*implicit def `arbUnitFun`[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def `arbTestFun`[C: Arbitrary] =
+  Arbitrary[UnitFun[C]] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbTestFun[C: Arbitrary] =
+* Arbitrary[`UnitFun[C]`] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbTestFun[C: Arbitrary] =
+* Arbitrary[`Unit =>> C`] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbTestFun[C: Arbitrary] =
+  Arbitrary[`Unit` =>> C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbTestFun[`A, `C: Arbitrary] =
+  Arbitrary[Unit =>> C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+* Arbitrary[`Unit` =>> C] {
+    Gen.function1[`Unit`, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+* Arbitrary[`A` =>> C] {
+*   Gen.function1[`A`, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`f => UnitFun(f)`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`???`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+trait Argument[A] {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait `Argument[A]` {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def `build`[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def build[C](`f: A => C`): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def build[C](f: A => C): `A =>> C`
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`???`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbTestFun[A, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`Argument[A].build`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbTestFun[A`: Argument`, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent:fail
+implicit def arbTestFun[A: Argument, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbTestFun[A: Argument, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+// `error: could not find implicit value for parameter co1: Cogen[A]`
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbTestFun[A: Argument`: Cogen`, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+implicit def arbTestFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+```tut:invisible
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    arbitrary[A =>> C]
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```tut:silent
+implicit val argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) =
+      UnitFun(f)
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit val argUnit =
+  new `Argument[Unit]` {
+    override def build[C](f: Unit => C) =
+      UnitFun(f)
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit val argUnit =
+  new Argument[Unit] {
+    override def `build`[C](f: Unit => C) =
+      UnitFun(f)
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit val argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) =
+      `UnitFun`(f)
+  }
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Simplifying creation
+
+```tut:silent
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinkC(f()).map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+case class UnitFun[C](
+  f: Unit => C
+) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    `f()`
+
+  override def table =
+    `List(() -> f())`
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    `shrinkC(f()).map(c => UnitFun(_ => c))`
+}
+```
+
+---
+
+## Simplifying creation
+
+```tut:silent
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  `eval    : A => C`,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def `apply`(a: A) =
+    `eval(a)`
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  `values  : => List[(A, C)]`,
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def `table` =
+    `values`
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  `shrinker: (C => Stream[C]) => Stream[A =>> C]`
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def `shrink`(shrinkC: C => Stream[C]) =
+    `shrinker(shrinkC)`
+}
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def `unit`[C](
+  f: Unit => C
+): `(Unit =>> C)` = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  `f: Unit => C`
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  `eval` = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = `f`,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  `values` = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(`() -> f()`),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  `shrinker` = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    `shrinkC(f())`.map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](
+  f: Unit => C
+): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(`c => unit(_ => c)`)
+)
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def `bool`[C](
+  f: Boolean => C
+): `(Boolean =>> C)` = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  `f: Boolean => C`
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    `eval` = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = `f`,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    `values` = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(`true -> f(true)`, false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), `false -> f(false)`),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    `shrinker` = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      `shrinkC(f(true))`.map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(`c => copy(onTrue = c)`) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      `shrinkC(f(false))`.map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(`c => copy(onFalse = c)`)
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+implicit val argBool =
+  new Argument[Boolean] {
+    override def build[C](f: Boolean => C) =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBool =
+  new `Argument[Boolean]` {
+    override def build[C](f: Boolean => C) =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBool =
+  new Argument[Boolean] {
+    override def `build[C](f: Boolean => C)` =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBool =
+  new Argument[Boolean] {
+    override def build[C](f: Boolean => C) =
+      `bool`(f)
+  }
+```
+
+
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 0, false => 1}`
+```
+
+---
+
+## Key takeaways
+
+We've developed a mechanism for showing and shrinking arbitrary functions by:
+--
+
+* creating a dedicated type, `A =>> C`.
+--
+
+* providing a way to lift a regular function into that type, `Argument[A]`.
+
+--
+
+We've only seen it work with `Boolean` and `Unit` though...
+
+---
+
+class: center, middle
+
+# `A ≃ B`
+
+---
+
+## `Answer ≃ Boolean`
+
+```tut:silent
+sealed trait Answer
+
+object Answer {
+  case object Yes extends Answer
+  case object No extends Answer
+}
+```
+
+---
+
+## `Answer ≃ Boolean`
+
+```tut:silent
+val fromBool: Boolean => Answer = {
+  case true => Answer.Yes
+  case false => Answer.No
+}
+```
+
+```tut:silent
+val toBool: Answer => Boolean = {
+  case Answer.Yes => true
+  case Answer.No  => false
+}
+```
+
+
+---
+
+## `Answer =>> C`
+
+```tut:silent
+def answer[C](
+  f: Boolean =>> C
+): (Answer =>> C) = fun(
+
+    eval     = toBool andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (fromBool(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).map { b2c => answer(b2c) }
+  )
+```
+
+---
+
+## `Answer =>> C`
+
+```tut:silent
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : B =>> C
+): (A =>> C) = fun(
+
+    eval     = to andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (from(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).map { b2c => imap(to, from, b2c) }
+  )
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+implicit val argAnswer =
+  new Argument[Answer] {
+    override def build[C](f: Answer => C) =
+      imap(toBool, fromBool, bool(fromBool andThen f))
+  }
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+def argMap[A, B: Argument](
+  to  : A => B,
+  from: B => A
+) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, Argument[B].build(from andThen f))
+  }
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+implicit val argAnswer =
+  argMap(toBool, fromBool)
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+val propAnswer = forAll { (f: Answer => Int) =>
+  f(Answer.Yes) == f(Answer.No)
+}
+```
+
+--
+
+```tut:book
+validate(propAnswer)
+```
+
+---
+
+## Key takeaways
+
+We can write `A =>> C` for any `A` given:
+--
+
+* a type `B` equivalent to `A`.
+--
+
+* a way of building `B =>> C`.
+
+
+---
+
+class: center, middle
+
+# Revisiting `Boolean =>> C`
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+def booleanTo: Boolean => Either[Unit, Unit] = {
+  case true  => Left()
+  case false => Right()
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+def booleanFrom: Either[Unit, Unit] => Boolean = {
+  case Left(())  => true
+  case Right(()) => false
+}
+```
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```tut:silent
+def bool[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+
+---
+
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-rm[
+```scala
+*def `bool`[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+* def copy(onTrue: C = f(true), onFalse: C = f(false)) = `bool` {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-add[
+```scala
+*def `either`[C](
+  f: Boolean => C
+): (Boolean =>> C) = {
+
+* def copy(onTrue: C = f(true), onFalse: C = f(false)) = `either` {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+* f: `Boolean` => C
+*): (`Boolean` =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = either {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+* f: `Either[Unit, Unit]` => C
+*): (`Either[Unit, Unit]` =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = either {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(`onTrue`: C = f(`true`), onFalse: C = f(false)) = either {
+*   case `true`  => `onTrue`
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(`true` -> f(`true`), false -> f(false)),
+
+    shrinker = shrinkC =>
+*     shrinkC(f(`true`)).map(c => copy(`onTrue` = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(`left`: C = f(`Left()`), onFalse: C = f(false)) = either {
+*   case `Left(u)`  => `left`
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(`Left()` -> f(`Left()`), false -> f(false)),
+
+    shrinker = shrinkC =>
+*     shrinkC(f(`Left()`)).map(c => copy(`left` = c)) #:::
+      shrinkC(f(false)).map(c => copy(onFalse = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = f(Left()), `onFalse`: C = f(`false`)) = either {
+    case Left(u)  => left
+*   case `false` => `onFalse`
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> f(Left()), `false` -> f(`false`)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+*     shrinkC(f(`false`)).map(c => copy(`onFalse` = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = f(Left()), `right`: C = f(`Right()`)) = either {
+    case Left(u)  => left
+*   case `Right(u)` => `right`
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> f(Left()), `Right()` -> f(`Right()`)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+*     shrinkC(f(`Right()`)).map(c => copy(`right` = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```tut:silent
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = f(Left()), right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> f(Left()), Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```tut:silent
+implicit val argEither =
+  new Argument[Either[Unit, Unit]] {
+    override def build[C](f: Either[Unit, Unit] => C) =
+      either(f)
+  }
+```
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```scala
+implicit val argEither =
+  new `Argument[Either[Unit, Unit]]` {
+    override def build[C](f: Either[Unit, Unit] => C) =
+      either(f)
+  }
+```
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```scala
+implicit val argEither =
+  new Argument[Either[Unit, Unit]] {
+    override def `build`[C](f: Either[Unit, Unit] => C) =
+      either(f)
+  }
+```
+
+---
+
+## `Either[Unit, Unit] =>> C`
+
+```scala
+implicit val argEither =
+  new Argument[Either[Unit, Unit]] {
+    override def build[C](f: Either[Unit, Unit] => C) =
+      `either`(f)
+  }
+```
+
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+implicit val argBoolean: Argument[Boolean] =
+  argMap(booleanTo, booleanFrom)
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBoolean: `Argument[Boolean]` =
+  argMap(booleanTo, booleanFrom)
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBoolean: Argument[Boolean] =
+  argMap(`booleanTo`, booleanFrom)
+```
+
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit val argBoolean: Argument[Boolean] =
+  argMap(booleanTo, `booleanFrom`)
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 0, false => 1}`
+```
+
+---
+
+class: center, middle
+
+# `Trilean =>> C`
+
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+sealed trait Trilean
+
+object Trilean {
+  case object True extends Trilean
+  case object False extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+sealed trait `Trilean`
+
+object Trilean {
+  case object True extends Trilean
+  case object False extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+sealed trait Trilean
+
+object Trilean {
+  case object `True` extends Trilean
+  case object False extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+sealed trait Trilean
+
+object Trilean {
+  case object True extends Trilean
+  case object `False` extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+sealed trait Trilean
+
+object Trilean {
+  case object True extends Trilean
+  case object False extends Trilean
+  case object `Unknown` extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val trileanTo: Trilean => Either[Unit, Either[Unit, Unit]] = {
+  case Trilean.True    => Left(())
+  case Trilean.False   => Right(Left(()))
+  case Trilean.Unknown => Right(Right(()))
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val trileanFrom: Either[Unit, Either[Unit, Unit]] => Trilean = {
+  case Left(())         => Trilean.True
+  case Right(Left(()))  => Trilean.False
+  case Right(Right(())) => Trilean.Unknown
+}
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+Diagram showing that `Either[Unit, Unit] => C` can be seen as 2 `Unit => C`.
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[C](
+  f: Either[Unit, Unit] => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = f(Left()), right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> f(Left()), Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+* `f: Either[Unit, Unit] => C`
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = f(Left()), right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> f(Left()), Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+* `left : Unit => C,`
+* `right: Unit => C`
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = f(Left()), right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> f(Left()), Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+      shrinkC(f(Left())).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = `f(Left())`, right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> `f(Left())`, Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+*     shrinkC(`f(Left())`).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = `left()`, right: C = f(Right())) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> `left()`, Right() -> f(Right())),
+
+    shrinker = shrinkC =>
+*     shrinkC(`left()`).map(c => copy(left = c)) #:::
+      shrinkC(f(Right())).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = left(), right: C = `f(Right())`) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> left(), Right() -> `f(Right())`),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => copy(left = c)) #:::
+*     shrinkC(`f(Right())`).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = left(), right: C = `right()`) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+*   values = List(Left() -> left(), Right() -> `right()`),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => copy(left = c)) #:::
+*     shrinkC(`right()`).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+* def copy(left: C = left(), right: C = right()) = either {
+*   case Left(u)  => left
+*   case Right(u) => right
+* }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => copy(left = c)) #:::
+      shrinkC(right()).map(c => copy(right = c))
+  )
+}
+```
+]
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = left(), right: C = right()) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+*     shrinkC(left()).map(c => `copy(left = c)`) #:::
+      shrinkC(right()).map(c => copy(right = c))
+  )
+}
+```
+]
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = left(), right: C = right()) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+*     shrinkC(left()).map(c => `either(_ => c, right)`) #:::
+      shrinkC(right()).map(c => copy(right = c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = left(), right: C = right()) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+*     shrinkC(right()).map(c => `copy(right = c)`)
+  )
+}
+```
+]
+
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+
+  def copy(left: C = left(), right: C = right()) = either {
+    case Left(u)  => left
+    case Right(u) => right
+  }
+
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+*     shrinkC(right()).map(c => `either(left, _ => c)`)
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) = {
+*
+* `def copy(left: C = left(), right: C = right()) = either {`
+*   `case Left(u)  => left`
+*   `case Right(u) => right`
+* `}`
+*
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+}
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = f,
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+*   eval = `f,`
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+*   eval = `{`
+*     `case Left(u)  => left(u)`
+*     `case Right(u) => right(u)`
+*   `},`
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case `Left(u)  => left(u)`
+      case Right(u) => right(u)
+    },
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case `Right(u) => right(u)`
+    },
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = List(Left() -> left(), Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+*   values = `List(Left() -> left(), Right() -> right()),`
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit => C,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+*   values = `List(Left() -> left()) ++`
+*            `List(Right() -> right()),`
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  `left : Unit => C`,
+  right: Unit => C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      `case Left(u)  => left(u)`
+      case Right(u) => right(u)
+    },
+
+    values = `List(Left() -> left())` ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      `shrinkC(left()).map(c => either(_ => c, right))` #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit => C,
+  `right: Unit => C`
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      `case Right(u) => right(u)`
+    },
+
+    values = List(Left() -> left()) ++
+             `List(Right() -> right())`,
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      `shrinkC(right()).map(c => either(left, _ => c))`
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+* left : `Unit => C`,
+* right: `Unit => C`
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = List(Left() -> left()) ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+* left : `Unit =>> C`,
+* right: `Unit =>> C`
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = List(Left() -> left()) ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+*   values = `List(Left() -> left())` ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+*   values = `left.table.map { case (u, c) => Left(u) -> c } ++`
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = `left.table`.map { case (u, c) => Left(u) -> c } ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (`u`, c) => `Left(u)` -> c } ++
+             List(Right() -> right()),
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+*            `List(Right() -> right())`,
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++`
+*            `right.table.map { case (u, c) => Right(u) -> c }`,
+
+    shrinker = shrinkC =>
+      shrinkC(left()).map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+*     `shrinkC(left())`.map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+*     `left.shrink(shrinkC)`.map(c => either(_ => c, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+*     left.shrink(shrinkC).map(`c` => either(`_ => c`, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+*     left.shrink(shrinkC).map(`l` => either(`l`, right)) #:::
+      shrinkC(right()).map(c => either(left, _ => c))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+*     `shrinkC(right()).map(c => either(left, _ => c))`
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+*     `right.shrink(shrinkC).map(r => either(left, r))`
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[C](
+  left : `Unit` =>> C,
+  right: `Unit` =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+*def either[`A, `C](
+  left : Unit =>> C,
+  right: Unit =>> C
+): (Either[Unit, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(u)  => left(u)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (u, c) => Left(u) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, C](
+* left : `Unit` =>> C,
+  right: Unit =>> C
+*): (Either[`Unit`, Unit] =>> C) =
+  fun(
+    eval = {
+*     case Left(`u`)  => left(`u`)
+      case Right(u) => right(u)
+    },
+
+*   values = left.table.map { case (`u`, c) => Left(`u`) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, C](
+* left : `A` =>> C,
+  right: Unit =>> C
+*): (Either[`A`, Unit] =>> C) =
+  fun(
+    eval = {
+*     case Left(`a`)  => left(`a`)
+      case Right(u) => right(u)
+    },
+
+*   values = left.table.map { case (`a`, c) => Left(`a`) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+*def either[A, `B, `C](
+  left : A =>> C,
+  right: Unit =>> C
+): (Either[A, Unit] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(u) => right(u)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (u, c) => Right(u) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : A =>> C,
+* right: `Unit` =>> C
+*): (Either[A, `Unit`] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(`u`) => right(`u`)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+*            right.table.map { case (`a`, c) => Right(`a`) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : A =>> C,
+* right: `B` =>> C
+*): (Either[A, `B`] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(`b`) => right(`b`)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+*            right.table.map { case (`b`, c) => Right(`b`) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[A, B, C](
+  left : A =>> C,
+  right: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(b) => right(b)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+Diagram that shows `Argument[A].build(a => f(Left(a)))` ?
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new `Argument[Either[A, B]]` {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[`A: Argument`, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, `B: Argument`] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      `either`(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        `Argument[A].build(a => f(Left(a)))`,
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        `Argument[B].build(b => f(Right(b)))`
+      )
+  }
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+implicit val argTrilean: Argument[Trilean] =
+  argMap(trileanTo, trileanFrom)
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+implicit val argTrilean: `Argument[Trilean]` =
+  argMap(trileanTo, trileanFrom)
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+implicit val argTrilean: Argument[Trilean] =
+  argMap(`trileanTo`, trileanFrom)
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+implicit val argTrilean: Argument[Trilean] =
+  argMap(trileanTo, `trileanFrom`)
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (`f: Trilean => Int`) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (f: Trilean => Int) =>
+  `f(Trilean.True)` == f(Trilean.False)
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == `f(Trilean.False)`
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+```tut:book
+validate(propTrilean)
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+```scala
+validate(propTrilean)
+// ✖ Failed with:
+//  - `ARG_0: {True => 0, False => 1, Unknown => 0}`
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(`Trilean.True`) == f(Trilean.False)
+}
+```
+
+```scala
+validate(propTrilean)
+// ✖ Failed with:
+//  - ARG_0: {`True => 0`, False => 1, Unknown => 0}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(`Trilean.False`)
+}
+```
+
+```scala
+validate(propTrilean)
+// ✖ Failed with:
+//  - ARG_0: {True => 0, `False => 1`, Unknown => 0}
+```
+
+---
+
+## `Trilean =>> C`
+
+```scala
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+```scala
+validate(propTrilean)
+// ✖ Failed with:
+//  - ARG_0: {True => 0, False => 1, `Unknown => 0`}
+```
+
+---
+
+
+class: center, middle
+
+# Partial `A =>> C`
+
+
+```tut:invisible:reset
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends `(A => C)` {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+]
+
+---
+
+## Partial `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends `(A => Option[C])` {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+]
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => Option[C]) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+.diff-rm[
+```scala
+def fun[A, C](
+  eval    : `A => C`,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+]
+
+
+---
+
+## Partial `A =>> C`
+
+.diff-add[
+```scala
+def fun[A, C](
+  eval    : `A => Option[C]`,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+]
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+def fun[A, C](
+  eval    : A => Option[C],
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+.diff-rm[
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+* eval = `f`,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+]
+
+---
+
+## Partial `Unit =>> C`
+
+.diff-add[
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+* eval = `u => Some(f(u))`,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+]
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = u => Some(f(u)),
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = u => Some(f(u)),
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    `shrinkC(f()).map(c => unit(_ => c))`
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def void[A, C]: (A =>> C) = fun(
+
+  eval = _ => None,
+
+  values = List.empty,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def `void`[A, C]: (A =>> C) = fun(
+
+  eval = _ => None,
+
+  values = List.empty,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def void[A, C]: (`A =>> C`) = fun(
+
+  eval = _ => None,
+
+  values = List.empty,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def void[A, C]: (A =>> C) = fun(
+
+  `eval = _ => None`,
+
+  values = List.empty,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def void[A, C]: (A =>> C) = fun(
+
+  eval = _ => None,
+
+  `values = List.empty`,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```scala
+def void[A, C]: (A =>> C) = fun(
+
+  eval = _ => None,
+
+  values = List.empty,
+
+  `shrinker = _ => Stream.empty`
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = u => Some(f(u)),
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+.diff-add[
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = u => Some(f(u)),
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+*   `void[Unit, C] #::`
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+]
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = u => Some(f(u)),
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    void[Unit, C] #::
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[A, B, C](
+  left : A =>> C,
+  right: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(b) => right(b)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+* left : `A =>> C`,
+* right: `B =>> C`
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(b) => right(b)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+* left : `Either[A, B] =>> C`,
+* right: `Either[A, B] =>> C`
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a)  => left(a)
+      case Right(b) => right(b)
+    },
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+*   eval = `{`
+*     `case Left(a)  => left(a)`
+*     `case Right(b) => right(b)`
+*   `}`,
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+*   eval = `ab => left(ab).orElse(right(ab))`,
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => `left(ab)`.orElse(right(ab)),
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(`right(ab)`),
+
+    values = left.table.map { case (a, c) => Left(a) -> c } ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+*   values = `left.table.map { case (a, c) => Left(a) -> c }` ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+*   values = `left.table` ++
+             right.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+*            `right.table.map { case (b, c) => Right(b) -> c }`,
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+*            `right.table`,
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC).map(l => either(l, right)) #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+*     `left.shrink(shrinkC).map(l => either(l, right))` #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+*     `left.shrink(shrinkC)`  #:::
+      right.shrink(shrinkC).map(r => either(left, r))
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC)  #:::
+*     `right.shrink(shrinkC).map(r => either(left, r))`
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left.shrink(shrinkC)  #:::
+*     `right.shrink(shrinkC)`
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+*     `left                  #::`
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+*     `right                 #::`
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[A, B, C](
+  left : Either[A, B] =>> C,
+  right: Either[A, B] =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, B, C](
+* left : `Either[A, B]` =>> C,
+* right: `Either[A, B]` =>> C
+*): (`Either[A, B]` =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+def either[A, B, C](
+* left : `A` =>> C,
+* right: `A` =>> C
+*): (`A` =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+def either[A, `B, `C](
+  left : A =>> C,
+  right: A =>> C
+): (A =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[A, C](
+  left : A =>> C,
+  right: A =>> C
+): (A =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-rm[
+```scala
+*def `either`[A, C](
+  left : A =>> C,
+  right: A =>> C
+): (A =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+.diff-add[
+```scala
+*def `union`[A, C](
+  left : A =>> C,
+  right: A =>> C
+): (A =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+]
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def union[A, C](
+  left : A =>> C,
+  right: A =>> C
+): (A =>> C) =
+  fun(
+    eval = ab => left(ab).orElse(right(ab)),
+
+    values = left.table ++
+             right.table,
+
+    shrinker = shrinkC =>
+      left                  #::
+      right                 #::
+      left.shrink(shrinkC)  #:::
+      right.shrink(shrinkC)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  `f: A =>> C`
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (`Either[A, B] =>> C`) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      `case Left(a) => f(a)`
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      `case Right(_) => None`
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = `f.table`.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (`a`, c) => `Left(a)` -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(left)
+  )
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      `f.shrink(shrinkC)`.map(left)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def left[A, B, C](
+  f: A =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(a) => f(a)
+      case Right(_) => None
+    },
+
+    values = f.table.map { case (a, c) => Left(a) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(`left`)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def right[A, B, C](
+  f: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(_) => None
+      case Right(b) => f(b)
+    },
+
+    values = f.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(right)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def right[A, B, C](
+  f: B =>> C
+): (`Either[A, B] =>> C`) =
+  fun(
+    eval = {
+      case Left(_) => None
+      case Right(b) => f(b)
+    },
+
+    values = f.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(right)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def right[A, B, C](
+  f: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      `case Left(_) => None`
+      `case Right(b) => f(b)`
+    },
+
+    values = f.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(right)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def right[A, B, C](
+  f: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(_) => None
+      case Right(b) => f(b)
+    },
+
+    values = `f.table.map { case (b, c) => Right(b) -> c }`,
+
+    shrinker = shrinkC =>
+      f.shrink(shrinkC).map(right)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def right[A, B, C](
+  f: B =>> C
+): (Either[A, B] =>> C) =
+  fun(
+    eval = {
+      case Left(_) => None
+      case Right(b) => f(b)
+    },
+
+    values = f.table.map { case (b, c) => Right(b) -> c },
+
+    shrinker = shrinkC =>
+      `f.shrink(shrinkC).map(right)`
+  )
+```
+
+
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def either[A, B, C](
+  f1: A =>> C,
+  f2: B =>> C
+): (Either[A, B] =>> C) =
+  union(
+    left(f1),
+    right(f2)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  `f1: A =>> C`,
+  f2: B =>> C
+): (Either[A, B] =>> C) =
+  union(
+    left(f1),
+    right(f2)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  f1: A =>> C,
+  f2: B =>> C
+): (Either[A, B] =>> C) =
+  union(
+    `left(f1)`,
+    right(f2)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  f1: A =>> C,
+  `f2: B =>> C`
+): (Either[A, B] =>> C) =
+  union(
+    left(f1),
+    right(f2)
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  f1: A =>> C,
+  f2: B =>> C
+): (Either[A, B] =>> C) =
+  union(
+    left(f1),
+    `right(f2)`
+  )
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+def either[A, B, C](
+  f1: A =>> C,
+  f2: B =>> C
+): (Either[A, B] =>> C) =
+  `union`(
+    left(f1),
+    right(f2)
+  )
+```
+
+
+```tut:invisible
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : B =>> C
+): (A =>> C) = fun(
+
+    eval     = to andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (from(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).
+      map { b2c => imap(to, from, b2c) }
+  )
+
+trait Argument[A] {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+
+implicit def argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) =
+      unit(f)
+  }
+
+def argMap[A, B: Argument](to: A => B, from: B => A) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, Argument[B].build(from andThen f))
+  }
+
+sealed trait Trilean
+
+object Trilean {
+  case object True extends Trilean
+  case object False extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new `Argument[Either[A, B]]` {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def `build[C](f: Either[A, B] => C)` =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        `Argument[A].build(a => f(Left(a)))`,
+        Argument[B].build(b => f(Right(b)))
+      )
+  }
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```scala
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) =
+      either(
+        Argument[A].build(a => f(Left(a))),
+        `Argument[B].build(b => f(Right(b)))`
+      )
+  }
+```
+
+```tut:silent:invisible
+implicit val argTrilean: Argument[Trilean] = {
+  type Repr = Either[Unit, Either[Unit, Unit]]
+  val to: Trilean => Repr = {
+    case Trilean.True    => Left(())
+    case Trilean.False   => Right(Left(()))
+    case Trilean.Unknown => Right(Right(()))
+  }
+
+  val from: Repr => Trilean = {
+    case Left(())         => Trilean.True
+    case Right(Left(()))  => Trilean.False
+    case Right(Right(())) => Trilean.Unknown
+  }
+
+  argMap(to, from)
+}
+
+def booleanTo: Boolean => Either[Unit, Unit] = {
+  case true  => Left()
+  case false => Right()
+}
+
+def booleanFrom: Either[Unit, Unit] => Boolean = {
+  case Left(())  => true
+  case Right(()) => false
+}
+
+
+implicit val argBoolean: Argument[Boolean] =
+  argMap(booleanTo, booleanFrom)
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:invisible
+implicit def arbTestFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A =>> C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+```tut:fail:silent
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    arbitrary[A =>> C]
+  }
+```
+
+---
+
+## Partial `A =>> C`
+
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    `arbitrary[A =>> C]`
+  }
+```
+
+
+---
+
+## Partial `A =>> C`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    arbitrary[A =>> C]
+  }
+// polymorphic expression cannot be instantiated to expected type;
+// found   : (A => C) => (A => Option[C])
+// required: (A => C) => (A => C)
+```
+
+---
+
+## Partial `A =>> C`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    arbitrary[A =>> C]
+  }
+// polymorphic expression cannot be instantiated to expected type;
+// `found`   : (A => C) => `(A => Option[C])`
+// `required`: (A => C) => `(A => C)`
+```
+
+---
+
+Diagram showing how to make a partial function total
+
+---
+
+## `Fun[A, C]`
+
+```tut:silent
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+}
+```
+
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](`fun: A =>> C`, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, `undef: C`) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def `apply`(a: A) =
+    fun(a).getOrElse(undef)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    `fun(a)`.getOrElse(undef)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(`undef`)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```tut:silent
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+.diff-add[
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+*
+* `def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =`
+*   `fun.shrink(shrinkC).map(f => copy(fun = f))`
+
+}
+```
+]
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    `fun.shrink(shrinkC)`.map(f => copy(fun = f))
+
+}
+```
+
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => `copy(fun = f)`)
+
+}
+```
+
+
+---
+
+## `Fun[A, C]`
+
+.diff-add[
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+*   fun.shrink(shrinkC).map(f => copy(fun = f))` #:::`
+*   `shrinkC(undef).map(d => copy(undef = d))`
+}
+```
+]
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    `shrinkC(undef)`.map(d => copy(undef = d))
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => `copy(undef = d)`)
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```tut:silent
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+.diff-add[
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+*
+* `override def toString = {`
+*   `val defined   = fun.table.map { case (a, c) => s"$a => $c" }`
+*   `val undefined = s"_ => $undef"`
+*
+*   `(defined :+ undefined).mkString("{", ", ", "}")`
+* `}`
+}
+```
+]
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+
+  override def toString = {
+    val defined   = `fun.table.map { case (a, c) => s"$a => $c" }`
+    val undefined = s"_ => $undef"
+
+    (defined :+ undefined).mkString("{", ", ", "}")
+  }
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+
+  override def toString = {
+    val defined   = fun.table.map { case (a, c) => s"$a => $c" }
+    val undefined = `s"_ => $undef"`
+
+    (defined :+ undefined).mkString("{", ", ", "}")
+  }
+}
+```
+
+---
+
+## `Fun[A, C]`
+
+```scala
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+
+  override def toString = {
+    val defined   = fun.table.map { case (a, c) => s"$a => $c" }
+    val undefined = s"_ => $undef"
+
+    `(defined :+ undefined).mkString("{", ", ", "}")`
+  }
+}
+```
+
+
+
+
+---
+
+## `Fun[A, C]`
+
+```tut:silent
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) =
+    fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+
+  override def toString = {
+    val defined   = fun.table.map { case (a, c) => s"$a => $c" }
+    val undefined = s"_ => $undef"
+
+    (defined :+ undefined).mkString("{", ", ", "}")
+  }
+}
+```
+
+
+
+---
+
+## Generating `Fun[A, C]`
+
+```tut:silent
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    for {
+      fun   <- arbitrary[A =>> C]
+      undef <- arbitrary[C]
+    } yield Fun(fun, undef)
+  }
+```
+
+---
+
+## Generating `Fun[A, C]`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  `Arbitrary[A => C]` {
+    for {
+      fun   <- arbitrary[A =>> C]
+      undef <- arbitrary[C]
+    } yield Fun(fun, undef)
+  }
+```
+
+---
+
+## Generating `Fun[A, C]`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    for {
+      fun   <- `arbitrary[A =>> C]`
+      undef <- arbitrary[C]
+    } yield Fun(fun, undef)
+  }
+```
+
+---
+
+## Generating `Fun[A, C]`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    for {
+      fun   <- arbitrary[A =>> C]
+      undef <- `arbitrary[C]`
+    } yield Fun(fun, undef)
+  }
+```
+
+---
+
+## Generating `Fun[A, C]`
+
+```scala
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    for {
+      fun   <- arbitrary[A =>> C]
+      undef <- arbitrary[C]
+    } yield `Fun(fun, undef)`
+  }
+```
+
+---
+
+## Shrinking `Fun[A, C]`
+
+```tut:silent
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+    case f: (A =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Fun[A, C]`
+
+.diff-rm[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+*   case f: `(A =>> C)` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Fun[A, C]`
+
+.diff-add[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+*   case f: `Fun[A, C]` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Fun[A, C]`
+
+```tut:silent
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+    case f: Fun[A, C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+```tut:book
+validate(propTrilean)
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+```scala
+validate(propTrilean)
+// ✖ Failed with:
+//  - `ARG_0: {True => 0, _ => -1}`
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+def optionTo[A]: Option[A] => Either[Unit, A] = {
+    case None    => Left(())
+    case Some(a) => Right(a)
+}
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+def optionFrom[A]: Either[Unit, A] => Option[A] = {
+    case Left(()) => None
+    case Right(a) => Some(a)
+}
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+implicit def argOption[A: Argument]: Argument[Option[A]] =
+  argMap(optionTo[A], optionFrom[A])
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+val propOption = forAll { (f: Option[Trilean] => Int) =>
+  f(None) == f(Some(Trilean.True))
+}
+```
+
+--
+
+```tut:book
+validate(propOption)
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+val propOption = forAll { (f: Option[Trilean] => Int) =>
+  f(None) == f(Some(Trilean.True))
+}
+```
+
+```scala
+validate(propOption)
+// ✖ Failed with:
+//  - `ARG_0: {Some(True) => 0, _ => -1}`
+```
+
+## Key takeaways
+
+---
+
+class: center, middle
+
+# Product types
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+def couple[A, B, C](
+  f: A =>> (B =>> C)
+): ((A, B) =>> C) = fun(
+
+  eval = { case (a, b) =>
+    for {
+      b2c <- f(a)
+      c   <- b2c(b)
+    } yield c
+  },
+
+  values = for {
+    (a, b2c) <- f.table
+    (b, c)   <- b2c.table
+  } yield (a, b) -> c,
+
+  shrinker = shrinkC => f.
+    shrink(b2c => b2c.shrink(shrinkC)).map(a2b2c => couple(a2b2c))
+)
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+implicit def argTuple[A: Argument, B: Argument] =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      Argument[A].build(a => Argument[B].build(b => f((a, b))))
+    )
+  }
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+case class BoolPair(
+  b1: Boolean,
+  b2: Boolean
+)
+
+implicit val argBoolPair = {
+
+  type Repr = (Boolean, Boolean)
+
+  val to: BoolPair => Repr =
+    pair => (pair.b1, pair.b2)
+
+  val from: Repr => BoolPair = {
+    case (b1, b2) => BoolPair(b1, b2)
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+val propBoolPair = forAll { (f: BoolPair => Int) =>
+  f(BoolPair(true, false)) == f(BoolPair(false, true))
+}
+```
+
+--
+
+```tut:book
+validate(propBoolPair)
+```
+
+---
+
+class: center, middle
+
+# Recursive types
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `List[A] =>> C`
+
+.foreground[![Big badaboom](img/large-explosion.png)]
+
+```scala
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : => B =>> C
+): (A =>> C) = fun(
+
+  eval     = a => f(to(a)),
+
+  values   = f.table.map { case (b, c) => from(b) -> c },
+
+  shrinker = shrinkC => f.
+    shrink(shrinkC).map { b2c => imap(to, from, b2c) }
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def argMap[A, B](
+  to  : A => B,
+  from: B => A
+)(
+  implicit argB: => Argument[B]
+) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, argB.build(from andThen f))
+  }
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def left[A, B, C](
+  f: => A =>> C
+): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(a)  => f(a)
+    case Right(_) => None
+  },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def right[A, B, C](
+  f: => B =>> C
+): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(_)  => None
+    case Right(b) => f(b)
+  },
+
+  values   = f.table.map { case (b, c) => (Right(b), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(b2c => right(b2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def union[A, C](
+  f1: => A =>> C,
+  f2: => A =>> C
+): (A =>> C) = fun(
+
+  eval     = a => f1(a).orElse(f2(a)),
+
+  values   = f1.table ++ f2.table,
+
+  shrinker = shrinkC =>
+    f1                                          #::
+    f2                                          #::
+    f1.shrink(shrinkC).map(f1 => union(f1, f2)) #:::
+    f2.shrink(shrinkC).map(f2 => union(f1, f2))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+implicit def argEither[A, B](
+  implicit argA: => Argument[A],
+           argB: => Argument[B]
+) =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) = union(
+     left(argA.build(a => f(Left(a)))),
+     right(argB.build(b => f(Right(b))))
+    )
+  }
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def couple[A, B, C](
+  f: => A =>> (B =>> C)
+): ((A, B) =>> C) = fun(
+
+  eval = { case (a, b) =>
+    for {
+      b2c <- f(a)
+      c   <- b2c(b)
+    } yield c
+  },
+
+  values = for {
+    (a, b2c) <- f.table
+    (b, c)   <- b2c.table
+  } yield (a, b) -> c,
+
+  shrinker = shrinkC => f.
+    shrink(b2c => b2c.shrink(shrinkC)).map(a2b2c => couple(a2b2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+implicit def argTuple[A, B](
+  implicit argA: => Argument[A],
+           argB: => Argument[B]
+) =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      argA.build(a => argB.build(b => f((a, b))))
+    )
+  }
+```
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+val propList = forAll { (f: List[Boolean] => Int) =>
+  f(List.empty) == f(List(true))
+}
+```
+
+--
+
+```tut:book
+validate(propList)
+```
+
+---
+
+## Key takeaways
+
+--
+
+In order to support recursive types, we had to make everything lazy.
+
+---
+
+class: center, middle
+
+# All the types
+
+---
+
+## `Int =>> C`
+
+```tut:silent
+implicit def argInt: Argument[Int] = {
+
+  type Repr = Either[(Boolean, Int), Boolean]
+
+  def div2(i: Int): Int = math.floor(i / 2D).toInt
+
+  val to: Int => Repr = {
+    case 0  => Right(false)
+    case -1 => Right(true)
+    case i  => Left((i % 2 != 0, div2(i)))
+  }
+
+  val from: Repr => Int = {
+    case Right(true)  => -1
+    case Right(false) => 0
+    case Left((b, i)) => 2 * i + (if(b) 1 else 0)
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Int =>> C`
+
+```tut:silent
+val propInt = forAll { (f: Int => Int) =>
+  f(1) == f(2)
+}
+```
+
+--
+
+```tut:book
+validate(propInt)
+```
+
+---
+
+## `Char =>> C`
+
+```tut:silent
+implicit val argChar: Argument[Char] =
+  argMap[Char, Int](_.toInt, _.toChar)
+```
+
+---
+
+## `Char =>> C`
+
+```tut:silent
+val propChar = forAll { (f: Char => Int) =>
+  f('a') == f('b')
+}
+```
+
+--
+
+```tut:book
+validate(propChar)
+```
+
+---
+
+## `String =>> C`
+
+```tut:silent
+implicit val argString: Argument[String] =
+  argMap[String, List[Char]](_.toList, _.mkString)
+```
+
+---
+
+## `String =>> C`
+
+```tut:silent
+val propString = forAll { (f: String => Int) =>
+  f("Haskell") == f("Scala")
+}
+```
+
+--
+
+```tut:book
+validate(propString)
+```
+
+---
+
+## Finally, the answer
+
+```tut:silent
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+--
+
+```tut:book
+validate(propMapFilter)
+```
+
+---
+
+class: center, middle
+
+# In closing
+
+---
+
+## If you only remember 1 slide...
+
+---
+
+class: center, middle
+
+# Questions?
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+[@NicolasRinaudo]:https://twitter.com/NicolasRinaudo
+[Besedo]:https://twitter.com/besedo_official
+    </textarea>
+    <script src="js/remark.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+        var slideshow = remark.create({
+          highlightStyle: 'github',
+          highlightSpans: true,
+          highlightLines: true
+      });
+    </script>
+  </body>
+</html>
