@@ -1,0 +1,2544 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>Shrinking and showing functions (in Scala)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    </head>
+    <body>
+        <textarea id="source">
+class: center, middle
+
+# Shrinking and showing functions
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+```tut:invisible
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    `xs: List[Int]`,
+    `ys: List[Int]`
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    `xs.reverse ++ ys.reverse` == (xs ++ ys).reverse
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == `(xs ++ ys).reverse`
+}
+```
+
+---
+
+## A simple property
+
+```scala
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```tut:book
+validate(propReverseAppend)
+```
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAllNoShrink { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```scala
+validate(propReverseAppend)
+// ✖ Failed with:
+//  - `ARG_0: List(2147483647, -416991762, 1919426110, 214748364…`
+//  - `ARG_1: List(1983671757, 1143650104, -756315050, 181756746…`
+```
+
+---
+
+## A simple property
+
+.diff-rm[
+```scala
+*val propReverseAppend = forAll`NoShrink` { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+]
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAll { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+--
+
+```tut:book
+validate(propReverseAppend)
+```
+
+---
+
+## A simple property
+
+```tut:silent
+val propReverseAppend = forAll { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+
+```scala
+validate(propReverseAppend)
+// ✖ Failed with:
+//  - `ARG_0: List(0)`
+//  - `ARG_1: List(1)`
+```
+
+---
+
+## Random functions
+
+```tut:silent
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    `is: List[Int]`,
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    `f : Int => Int`,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    `p : Int => Boolean`
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    `is.filter(p).map(f)` == is.map(f).filter(p)
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == `is.map(f).filter(p)`
+}
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+```tut:book
+validate(propMapFilter)
+```
+
+---
+
+## Random functions
+
+```scala
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+```scala
+validate(propMapFilter)
+// ✖ Failed with:
+//  - ARG_0: List(1)
+//  - `ARG_1: <function>`
+//  - `ARG_2: <function>`
+```
+
+---
+
+class: center, middle
+
+# Shrinking and showing functions
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
+# Shrinking and showing functions (in Scala)
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
+# `Unit => C`
+
+---
+
+## Testing `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (`f: Unit => Int`) =>
+  f() == 0
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  `f() == 0`
+}
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Showing `Unit => C`
+
+```tut:silent
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) = f()
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class `UnitFun`[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) = f()
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](`f: Unit => C`) extends (Unit => C) {
+
+  override def apply(u: Unit) = f()
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) `extends (Unit => C)` {
+
+  override def apply(u: Unit) = f()
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def `apply(u: Unit)` = f()
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) = `f()`
+
+  override def toString = s"{() => ${f()}}"
+}
+```
+
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) = f()
+
+  override def `toString` = s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) = f()
+
+  override def toString = s"{`() => ${f()}`}"
+}
+```
+
+
+---
+
+## Showing `Unit => C`
+
+```tut:silent
+implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
+  Gen.function1[Unit, C](arbitrary[C]).
+    map(f => UnitFun(f))
+)
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+&#x200B;`implicit` def arbUnitFun[C: Arbitrary] = `Arbitrary[Unit => C]`(
+  Gen.function1[Unit, C](arbitrary[C]).
+    map(f => UnitFun(f))
+)
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
+  Gen.`function1[Unit, C]`(arbitrary[C]).
+    map(f => UnitFun(f))
+)
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
+  Gen.function1[Unit, C](arbitrary[C]).
+    map(`f => UnitFun(f)`)
+)
+```
+
+
+---
+
+## Showing `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1862882517}`
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```tut:silent
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case UnitFun(f) =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+
+  case _          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+&#x200B;`implicit` def shrinkUnit[C: Shrink] = `Shrink[Unit => C]` {
+
+  case UnitFun(f) =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+
+  case _          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  `case UnitFun(f)` =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+
+  case _          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case UnitFun(f) =>
+    `shrink(f())`.
+      map(c => UnitFun(_ => c))
+
+  case _          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case UnitFun(f) =>
+    shrink(f()).
+      map(`c => UnitFun(_ => c)`)
+
+  case _          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case UnitFun(f) =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+
+  `case _`          =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case UnitFun(f) =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+
+  case _          =>
+    `Stream.empty`
+}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Key takeaways
+
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Unit => C`.
+--
+
+* shrink a `Unit => C`.
+--
+
+* ... but only because its domain was of size 1.
+
+
+---
+
+class: center, middle
+
+# `Boolean => C`
+
+---
+
+## Testing `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (`f: Boolean => Int`) =>
+  f(true) == f(false)
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  `f(true) == f(false)`
+}
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Testing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Showing `Boolean => C`
+
+```tut:silent
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class `BoolFun`[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](`f: Boolean => C`) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) `extends (Boolean => C)` {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def `apply(b: Boolean)` = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = `f(b)`
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def `toString` =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{`true => ${f(true)}`, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) = f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, `false => ${f(false)}`}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```tut:silent
+implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
+  Gen.function1[Boolean, C](arbitrary[C]).
+    map(f => BoolFun(f))
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+&#x200B;`implicit` def arbBoolean[C: Arbitrary] = `Arbitrary[Boolean => C]` {
+  Gen.function1[Boolean, C](arbitrary[C]).
+    map(f => BoolFun(f))
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
+  Gen.`function1[Boolean, C]`(arbitrary[C]).
+    map(f => BoolFun(f))
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
+  Gen.function1[Boolean, C](arbitrary[C]).
+    map(`f => BoolFun(f)`)
+}
+```
+
+
+---
+
+## Showing `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+--
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 2147483647, false => 1862882517}`
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```tut:silent
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+&#x200B;`implicit` def shrinkBool[C: Shrink] = `Shrink[Boolean => C]` {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  `case BoolFun(f)` =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    `shrink(f(true))`.map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(`b => bool(onTrue = b)`)   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    `shrink(f(false))`.map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(`b => bool(onFalse = b)`)
+
+  case _ =>
+    Stream.empty
+}
+```
+
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  `case _` =>
+    Stream.empty
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    `Stream.empty`
+}
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+--
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Shrinking `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: {true => 0, false => 1}`
+```
+
+---
+
+## Key takeaways
+
+
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Boolean => C`.
+--
+
+* shrink a `Boolean => C`.
+
+--
+
+There is a lot of common code with `Unit => C`.
+
+---
+
+class: center, middle
+
+# `A =>> C`
+
+
+```tut:invisible:reset
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+---
+
+## `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+
+  override def toString = table.map { case (in, out) =>
+    s"$in => $out" }.mkString("{", ", ", "}")
+  }
+```
+
+---
+
+## `A =>> C`
+
+```tut:silent
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) = eval(a)
+
+  override def table = values
+
+  override def shrink(shrinkC: C => Stream[C]) = shrinker(shrinkC)
+}
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+  eval     = f,
+
+  values   = List(() -> f()),
+
+  shrinker = shrinkC => shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+implicit def arbFun[A: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(???)
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+trait Argument[A] {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```tut:silent
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```tut:silent
+implicit def argUnit = new Argument[Unit] {
+  override def build[C](f: Unit => C) = unit(f)
+}
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
+
+  case f: (A =>> C) => f.shrink(shrink[C])
+
+  case _            => Stream.empty
+}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```tut:silent
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```tut:book
+validate(propUnit)
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval     = f,
+
+    values   = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+implicit def argBool = new Argument[Boolean] {
+  override def build[C](f: Boolean => C) = bool(f)
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+--
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## Key takeaways
+
+We've developed a mechanism for showing and shrinking arbitrary functions by:
+--
+
+* creating a dedicated type, `A =>> C`.
+--
+
+* providing a way to lift a regular function into that type, `Argument[A]`.
+
+--
+
+We've only seen it work with `Boolean` and `Unit` though...
+
+---
+
+class: center, middle
+
+# `A ≃ B`
+
+---
+
+## `Answer ≃ Boolean`
+
+```tut:silent
+sealed trait Answer
+
+object Answer {
+  case object Yes extends Answer
+  case object No extends Answer
+}
+```
+
+---
+
+## `Answer ≃ Boolean`
+
+```tut:silent
+val fromBool: Boolean => Answer = {
+  case true => Answer.Yes
+  case false => Answer.No
+}
+```
+
+```tut:silent
+val toBool: Answer => Boolean = {
+  case Answer.Yes => true
+  case Answer.No  => false
+}
+```
+
+
+---
+
+## `Answer =>> C`
+
+```tut:silent
+def answer[C](f: Boolean =>> C): (Answer =>> C) = fun(
+
+    eval     = toBool andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (fromBool(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).
+      map { b2c => answer(b2c) }
+  )
+```
+
+---
+
+## `Answer =>> C`
+
+```tut:silent
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : B =>> C
+): (A =>> C) = fun(
+
+    eval     = to andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (from(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).
+      map { b2c => imap(to, from, b2c) }
+  )
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+implicit val argAnswer = new Argument[Answer] {
+  override def build[C](f: Answer => C) =
+    imap(toBool, fromBool, bool(fromBool andThen f))
+}
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+def argMap[A, B: Argument](to: A => B, from: B => A) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, Argument[B].build(from andThen f))
+  }
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+implicit val argAnswer = argMap(toBool, fromBool)
+```
+
+---
+
+## Generating `Answer =>> C`
+
+```tut:silent
+val propAnswer = forAll { (f: Answer => Int) =>
+  f(Answer.Yes) == f(Answer.No)
+}
+```
+
+--
+
+```tut:book
+validate(propAnswer)
+```
+
+---
+
+## Key takeaways
+
+We can write `A =>> C` for any `A` given:
+--
+
+* a type `B` equivalent to `A`.
+--
+
+* a way of building `B =>> C`.
+
+
+---
+
+class: center, middle
+
+# Sum types
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(a)  => f(a)
+    case Right(_) => ???
+  },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(left)
+)
+```
+
+---
+
+```tut:invisible:reset
+import com.nrinaudo.pbt._
+import org.scalacheck._
+import org.scalacheck.Prop._
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Shrink.shrink
+import org.scalacheck.ScalacheckShapeless._
+```
+
+## Partial `A =>> C`
+
+```tut:silent
+trait =>>[A, C] extends (A => Option[C]) {
+
+  def table: List[(A, C)]
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+
+  override def toString = table.
+    map { case (in, out) => s"$in => $out" }.
+    mkString("{", ", ", "}")
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+def fun[A, C](
+  eval    : A => Option[C],
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) = eval(a)
+
+  override def table = values
+
+  override def shrink(shrinkC: C => Stream[C]) = shrinker(shrinkC)
+}
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def unit[C](value: C): (Unit =>> C) = fun(
+  eval     = _ => Some(value),
+
+  values   = List(() -> value),
+
+  shrinker = shrinkC => shrinkC(value).map(unit)
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def void[A, C]: (A =>> C) = fun(
+  eval     = _ => None,
+
+  values   = List.empty,
+
+  shrinker = _ => Stream.empty
+)
+```
+
+---
+
+## Partial `Unit =>> C`
+
+```tut:silent
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+  eval     = _ => Some(f()),
+
+  values   = List(() -> f()),
+
+  shrinker = shrinkC =>
+    void[Unit, C] #::
+    shrinkC(f()).map(c => unit(_ => c))
+)
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : B =>> C
+): (A =>> C) = fun(
+
+  eval     = a => f(to(a)),
+
+  values   = f.table.map { case (b, c) => from(b) -> c },
+
+  shrinker = shrinkC => f.
+    shrink(shrinkC).
+    map { b2c => imap(to, from, b2c) }
+)
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+trait Argument[A] {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+implicit def argUnit = new Argument[Unit] {
+  override def build[C](f: Unit => C) = unit(f)
+}
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:silent
+def argMap[A, B: Argument](to: A => B, from: B => A) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, Argument[B].build(from andThen f))
+  }
+```
+
+---
+
+## Partial `A =>> C`
+
+```tut:book:fail
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+---
+
+## Total `A =>> C`
+
+```tut:silent
+case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
+
+  override def apply(a: A) = fun(a).getOrElse(undef)
+
+  def shrink(shrinkC: C => Stream[C]): Stream[Fun[A, C]] =
+    fun.shrink(shrinkC).map(f => copy(fun = f)) #:::
+    shrinkC(undef).map(d => copy(undef = d))
+
+  override def toString = {
+    val raw = fun.table.map { case (a, c) => s"$a => $c" } ++
+              List(s"_ => $undef")
+
+    raw.mkString("{", ", ", "}")
+  }
+}
+```
+
+---
+
+## Total `A =>> C`
+
+```tut:silent
+def genShrinkableFun[A: Argument: Cogen, C: Arbitrary] =
+  Gen.function1[A, C](arbitrary[C]).
+    map(Argument[A].build)
+
+implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
+  Arbitrary[A => C](for {
+    fun   <- genShrinkableFun[A, C]
+    undef <- arbitrary[C]
+  } yield Fun(fun, undef))
+```
+
+---
+
+## Total `A =>> C`
+
+```tut:silent
+implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
+
+  case f: Fun[A, C] => f.shrink(shrink)
+
+  case _            => Stream.empty
+}
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(a)  => f(a)
+    case Right(_) => None
+  },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
+)
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def right[A, B, C](f: B =>> C): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(_)  => None
+    case Right(b) => f(b)
+  },
+
+  values   = f.table.map { case (b, c) => (Right(b), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(b2c => right(b2c))
+)
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+def union[A, C](f1: A =>> C, f2: A =>> C): (A =>> C) = fun(
+
+  eval     = a => f1(a).orElse(f2(a)),
+
+  values   = f1.table ++ f2.table,
+
+  shrinker = shrinkC =>
+    f1                                          #::
+    f2                                          #::
+    f1.shrink(shrinkC).map(f1 => union(f1, f2)) #:::
+    f2.shrink(shrinkC).map(f2 => union(f1, f2))
+)
+```
+
+---
+
+## `Either[A, B] =>> C`
+
+```tut:silent
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) = union(
+      left(Argument[A].build(a => f(Left(a)))),
+      right(Argument[B].build(b => f(Right(b))))
+    )
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+implicit val boolArg = {
+
+  type Repr = Either[Unit, Unit]
+
+  val to: Boolean => Repr = {
+    case true => Left(())
+    case false => Right(())
+  }
+
+  val from: Repr => Boolean = {
+    case Left(()) => true
+    case Right(()) => false
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```tut:silent
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+--
+
+```tut:book
+validate(propBool)
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+sealed trait Trilean
+
+object Trilean {
+  case object True extends Trilean
+  case object False extends Trilean
+  case object Unknown extends Trilean
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+implicit val argTrilean = {
+
+  type Repr = Either[Unit, Either[Unit, Unit]]
+
+  val to: Trilean => Repr = {
+    case Trilean.True    => Left(())
+    case Trilean.False   => Right(Left(()))
+    case Trilean.Unknown => Right(Right(()))
+  }
+
+  val from: Repr => Trilean = {
+    case Left(())         => Trilean.True
+    case Right(Left(()))  => Trilean.False
+    case Right(Right(())) => Trilean.Unknown
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Trilean =>> C`
+
+```tut:silent
+val propTrilean = forAll { (f: Trilean => Int) =>
+  f(Trilean.True) == f(Trilean.False)
+}
+```
+
+--
+
+```tut:book
+validate(propTrilean)
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+implicit def argOption[A: Argument] = {
+
+  type Repr = Either[Unit, A]
+
+  val to: Option[A] => Repr = {
+    case Some(a) => Right(a)
+    case None    => Left(())
+  }
+
+  val from: Repr => Option[A] = {
+    case Right(a) => Some(a)
+    case Left(_)  => None
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Option[A] =>> C`
+
+```tut:silent
+val propOption = forAll { (f: Option[Boolean] => Int) =>
+  f(None) == f(Some(true))
+}
+```
+
+--
+
+```tut:book
+validate(propOption)
+```
+
+---
+
+## Key takeaways
+
+---
+
+class: center, middle
+
+# Product types
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+def couple[A, B, C](f: A =>> (B =>> C)): ((A, B) =>> C) = fun(
+
+  eval = { case (a, b) =>
+    for {
+      b2c <- f(a)
+      c   <- b2c(b)
+    } yield c
+  },
+
+  values = for {
+    (a, b2c) <- f.table
+    (b, c)   <- b2c.table
+  } yield (a, b) -> c,
+
+  shrinker = shrinkC => f.
+    shrink(b2c => b2c.shrink(shrinkC)).
+    map(a2b2c => couple(a2b2c))
+)
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+implicit def argTuple[A: Argument, B: Argument] =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      Argument[A].build(a => Argument[B].build(b => f((a, b))))
+    )
+  }
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+case class BoolPair(b1: Boolean, b2: Boolean)
+
+implicit val argBoolPair = {
+
+  type Repr = (Boolean, Boolean)
+
+  val to: BoolPair => Repr =
+    pair => (pair.b1, pair.b2)
+
+  val from: Repr => BoolPair = {
+    case (b1, b2) => BoolPair(b1, b2)
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `(A, B) =>> C`
+
+```tut:silent
+val propBoolPair = forAll { (f: BoolPair => Int) =>
+  f(BoolPair(true, false)) == f(BoolPair(false, true))
+}
+```
+
+--
+
+```tut:book
+validate(propBoolPair)
+```
+
+---
+
+class: center, middle
+
+# Recursive types
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `List[A] =>> C`
+
+.foreground[![Big badaboom](img/large-explosion.png)]
+
+```scala
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def imap[A, B, C](
+  to  : A => B,
+  from: B => A,
+  f   : => B =>> C
+): (A =>> C) = fun(
+
+  eval     = a => f(to(a)),
+
+  values   = f.table.map { case (b, c) => from(b) -> c },
+
+  shrinker = shrinkC => f.
+    shrink(shrinkC).
+    map { b2c => imap(to, from, b2c) }
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def argMap[A, B](to: A => B, from: B => A)(
+  implicit argB: => Argument[B]
+) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, argB.build(from andThen f))
+  }
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def left[A, B, C](f: => A =>> C): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(a)  => f(a)
+    case Right(_) => None
+  },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def right[A, B, C](f: => B =>> C): (Either[A, B] =>> C) = fun(
+
+  eval     = {
+    case Left(_)  => None
+    case Right(b) => f(b)
+  },
+
+  values   = f.table.map { case (b, c) => (Right(b), c) },
+
+  shrinker = shrinkC => f.shrink(shrinkC).map(b2c => right(b2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def union[A, C](f1: => A =>> C, f2: => A =>> C): (A =>> C) = fun(
+
+  eval     = a => f1(a).orElse(f2(a)),
+
+  values   = f1.table ++ f2.table,
+
+  shrinker = shrinkC =>
+    f1                                          #::
+    f2                                          #::
+    f1.shrink(shrinkC).map(f1 => union(f1, f2)) #:::
+    f2.shrink(shrinkC).map(f2 => union(f1, f2))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+implicit def argEither[A, B](
+  implicit argA: => Argument[A], argB: => Argument[B]
+) =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) = union(
+     left(argA.build(a => f(Left(a)))),
+     right(argB.build(b => f(Right(b))))
+    )
+  }
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+def couple[A, B, C](f: => A =>> (B =>> C)): ((A, B) =>> C) = fun(
+
+  eval = { case (a, b) =>
+    for {
+      b2c <- f(a)
+      c   <- b2c(b)
+    } yield c
+  },
+
+  values = for {
+    (a, b2c) <- f.table
+    (b, c)   <- b2c.table
+  } yield (a, b) -> c,
+
+  shrinker = shrinkC => f.
+    shrink(b2c => b2c.shrink(shrinkC)).
+    map(a2b2c => couple(a2b2c))
+)
+```
+
+---
+
+## Lazy `A =>> C`
+
+```tut:silent
+implicit def argTuple[A, B](
+  implicit argA: => Argument[A], argB: => Argument[B]
+) =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      argA.build(a => argB.build(b => f((a, b))))
+    )
+  }
+```
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+implicit def argList[A: Argument]: Argument[List[A]] = {
+
+  type Repr = Option[(A, List[A])]
+
+  val to: List[A] => Repr = {
+    case head :: tail => Some((head, tail))
+    case Nil          => None
+  }
+
+  val from: Repr => List[A] = {
+    case Some((head, tail)) => head :: tail
+    case None               => Nil
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `List[A] =>> C`
+
+```tut:silent
+val propList = forAll { (f: List[Boolean] => Int) =>
+  f(List.empty) == f(List(true))
+}
+```
+
+--
+
+```tut:book
+validate(propList)
+```
+
+---
+
+## Key takeaways
+
+--
+
+In order to support recursive types, we had to make everything lazy.
+
+---
+
+class: center, middle
+
+# All the types
+
+---
+
+## `Int =>> C`
+
+```tut:silent
+implicit def argInt: Argument[Int] = {
+
+  type Repr = Either[(Boolean, Int), Boolean]
+
+  def div2(i: Int): Int = math.floor(i / 2D).toInt
+
+  val to: Int => Repr = {
+    case 0  => Right(false)
+    case -1 => Right(true)
+    case i  => Left((i % 2 != 0, div2(i)))
+  }
+
+  val from: Repr => Int = {
+    case Right(true)  => -1
+    case Right(false) => 0
+    case Left((b, i)) => 2 * i + (if(b) 1 else 0)
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Int =>> C`
+
+```tut:silent
+val propInt = forAll { (f: Int => Int) =>
+  f(1) == f(2)
+}
+```
+
+--
+
+```tut:book
+validate(propInt)
+```
+
+---
+
+## `Char =>> C`
+
+```tut:silent
+implicit val argChar: Argument[Char] =
+  argMap[Char, Int](_.toInt, _.toChar)
+```
+
+---
+
+## `Char =>> C`
+
+```tut:silent
+val propChar = forAll { (f: Char => Int) =>
+  f('a') == f('b')
+}
+```
+
+--
+
+```tut:book
+validate(propChar)
+```
+
+---
+
+## `String =>> C`
+
+```tut:silent
+implicit val argString: Argument[String] =
+  argMap[String, List[Char]](_.toList, _.mkString)
+```
+
+---
+
+## `String =>> C`
+
+```tut:silent
+val propString = forAll { (f: String => Int) =>
+  f("Haskell") == f("Scala")
+}
+```
+
+--
+
+```tut:book
+validate(propString)
+```
+
+---
+
+## Finally, the answer
+
+```tut:silent
+val propMapFilter = forAll { (
+    is: List[Int],
+    f : Int => Int,
+    p : Int => Boolean
+  ) =>
+    is.filter(p).map(f) == is.map(f).filter(p)
+}
+```
+
+--
+
+```tut:book
+validate(propMapFilter)
+```
+
+---
+
+class: center, middle
+
+# In closing
+
+---
+
+## If you only remember 1 slide...
+
+---
+
+class: center, middle
+
+# Questions?
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+[@NicolasRinaudo]:https://twitter.com/NicolasRinaudo
+[Besedo]:https://twitter.com/besedo_official
+    </textarea>
+    <script src="js/remark.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+        var slideshow = remark.create({
+          highlightStyle: 'github',
+          highlightSpans: true,
+          highlightLines: true
+      });
+    </script>
+  </body>
+</html>
