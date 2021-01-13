@@ -18,6 +18,8 @@ Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
 
 
 
+## A simple property
+
 ```scala
 val propReverseAppend = forAllNoShrink { (
     xs: List[Int],
@@ -37,6 +39,8 @@ validate(propReverseAppend)
 
 ---
 
+## A simple property
+
 ```scala
 val propReverseAppend = forAll { (
     xs: List[Int],
@@ -55,6 +59,8 @@ validate(propReverseAppend)
 ```
 
 ---
+
+## Random functions
 
 ```scala
 val propMapFilter = forAll { (
@@ -84,6 +90,8 @@ class: center, middle
 
 ---
 
+## Testing `Unit => C`
+
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
   f() == 0
@@ -100,6 +108,8 @@ validate(propUnit)
 
 ---
 
+## Showing `Unit => C`
+
 ```scala
 case class UnitFun[C](value: C) extends (Unit => C) {
 
@@ -111,6 +121,8 @@ case class UnitFun[C](value: C) extends (Unit => C) {
 
 ---
 
+## Showing `Unit => C`
+
 ```scala
 implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
   arbitrary[C].map(UnitFun.apply)
@@ -118,6 +130,8 @@ implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
 ```
 
 ---
+
+## Showing `Unit => C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
@@ -135,16 +149,48 @@ validate(propUnit)
 
 ---
 
+## Shrinking `Unit => C`
+
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
-
-    case UnitFun(c) => shrink(c).map(UnitFun.apply)
-
-    case _          => Stream.empty
+implicit def shrinkUnitFun[C: Shrink] = Shrink[UnitFun[C]] {
+  case UnitFun(c) => shrink(c).map(UnitFun.apply)
 }
 ```
 
 ---
+
+## Shrinking `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: {() => 581163233}
+```
+
+---
+
+## Shrinking `Unit => C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+
+  case f: UnitFun[C] => shrink(f)
+
+  case _          => Stream.empty
+}
+```
+
+---
+
+## Shrinking `Unit => C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
@@ -164,9 +210,16 @@ validate(propUnit)
 
 ## Key takeaways
 
-When the domain is small enough, it's easy:
-- introduce a dedicated type with custom toString and shrink
-- override the default `Arbitrary` function instance for that type.
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Unit => C`.
+--
+
+* shrink a `Unit => C`.
+--
+
+* ... but only because its domain was of size 1.
 
 
 ---
@@ -176,6 +229,8 @@ class: center, middle
 # `Boolean => C`
 
 ---
+
+## Testing `Boolean => C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -193,9 +248,13 @@ validate(propBool)
 
 ---
 
+## Showing `Boolean => C`
+
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
   override def apply(b: Boolean) = f(b)
+
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
 }
@@ -203,16 +262,18 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
 ---
 
+## Showing `Boolean => C`
+
 ```scala
-def genBoolean[C: Arbitrary]: Gen[Boolean => C] =
+implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
   Gen.function1[Boolean, C](arbitrary[C]).
     map(BoolFun.apply)
-
-implicit def arbBoolean[C: Arbitrary]: Arbitrary[Boolean => C] =
-  Arbitrary(genBoolean[C])
+}
 ```
 
 ---
+
+## Showing `Boolean => C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -230,26 +291,30 @@ validate(propBool)
 
 ---
 
+## Shrinking `Boolean => C`
+
 ```scala
-def booleanFunction[C](onTrue: => C, onFalse: => C): Boolean => C =  {
-  case true  => onTrue
-  case false => onFalse
+implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+
+  case BoolFun(f) =>
+
+    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
+      BoolFun {
+        case true  => onTrue
+        case false => onFalse
+      }
+
+    shrink(f(true)).map(b => bool(onTrue = b))   #:::
+    shrink(f(false)).map(b => bool(onFalse = b))
+
+  case _ =>
+    Stream.empty
 }
 ```
 
-```scala
-implicit def shrinkBoolean[C: Shrink]: Shrink[Boolean => C] =
-  Shrink {
-    case BoolFun(f) =>
-      shrink(f(true)).map(c => BoolFun(booleanFunction(c, f(false)))) #:::
-      shrink(f(false)).map(c => BoolFun(booleanFunction(f(true), c)))
-
-    case _ =>
-      Stream.empty
-  }
-```
-
 ---
+
+## Shrinking `Boolean => C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -269,9 +334,18 @@ validate(propBool)
 
 ## Key takeaways
 
-Working with booleans is not very different than with units.
 
-Maybe we can factor out the common aspects?
+Introducing a dedicated function type allowed us to:
+--
+
+* show a `Boolean => C`.
+--
+
+* shrink a `Boolean => C`.
+
+--
+
+There is a lot of common code with `Unit => C`.
 
 ---
 
@@ -285,36 +359,23 @@ class: center, middle
 
 ---
 
-Not taking a Shrink[C] here because I'm listing the things we need from the initial implems:
-- `toString` (which we refactor to `table`)
-- a shrinking mechanism
+## `A =>> C`
 
 ```scala
 trait =>>[A, C] extends (A => C) {
+
   def table: List[(A, C)]
+
   def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
 
-  override def toString = table.map { case (in, out) => s"$in => $out" }.mkString("{", ", ", "}")
-}
+  override def toString = table.map { case (in, out) =>
+    s"$in => $out" }.mkString("{", ", ", "}")
+  }
 ```
 
 ---
 
-```scala
-implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
-
-  case f: (A =>> C) => f.shrink(shrink[C])
-
-  case _            => Stream.empty
-}
-
-```
-
----
-
-Let's define a creation helper so that it's slightly less painful in the future...
-
----
+## `A =>> C`
 
 ```scala
 def fun[A, C](
@@ -333,6 +394,8 @@ def fun[A, C](
 
 ---
 
+## `Unit =>> C`
+
 ```scala
 def unit[C](value: C): (Unit =>> C) = fun(
   eval     = _ => value,
@@ -345,15 +408,37 @@ def unit[C](value: C): (Unit =>> C) = fun(
 
 ---
 
+## `Unit =>> C`
+
 ```scala
-implicit def arbFun[A: Cogen, C: Arbitrary] = Arbitrary[A => C] {
-  Gen.function1[A, C](arbitrary[C]).map(???)
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
 }
 ```
 
-Can we abstract over the notion of, given an `A => C`, going into an `A =>> C`?
+--
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: <function>
+```
 
 ---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbFun[A: Cogen, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(???)
+  }
+```
+
+---
+
+## Generating `A =>> C`
 
 ```scala
 trait Argument[A] {
@@ -367,6 +452,8 @@ object Argument {
 
 ---
 
+## Generating `A =>> C`
+
 ```scala
 implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
   Arbitrary[A => C] {
@@ -377,6 +464,8 @@ implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
 
 ---
 
+## Generating `Unit =>> C`
+
 ```scala
 implicit def argUnit = new Argument[Unit] {
   override def build[C](f: Unit => C) = unit(f())
@@ -384,6 +473,39 @@ implicit def argUnit = new Argument[Unit] {
 ```
 
 ---
+
+## Generating `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+--
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: {() => 1862882517}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
+
+  case f: (A =>> C) => f.shrink(shrink[C])
+
+  case _            => Stream.empty
+}
+```
+
+---
+
+## Shrinking `A =>> C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
@@ -401,10 +523,11 @@ validate(propUnit)
 
 ---
 
-## Placeholder
+## `Boolean =>> C`
 
 ```scala
 def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
   def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
     case true  => onTrue
     case false => onFalse
@@ -416,13 +539,15 @@ def bool[C](f: Boolean => C): (Boolean =>> C) = {
     values   = List(true -> f(true), false -> f(false)),
 
     shrinker = shrinkC =>
-      shrinkC(f(true)).map(c => copy(onTrue = c)) #:::
-      shrinkC(f(false)).map(c => copy(onFalse = c))
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
   )
 }
 ```
 
 ---
+
+## `Boolean =>> C`
 
 ```scala
 implicit def argBool = new Argument[Boolean] {
@@ -431,6 +556,8 @@ implicit def argBool = new Argument[Boolean] {
 ```
 
 ---
+
+## `Boolean =>> C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -448,6 +575,30 @@ validate(propBool)
 
 ---
 
+## Key takeaways
+
+We've developed a mechanism for showing and shrinking arbitrary functions by:
+--
+
+* creating a dedicated type, `A =>> C`.
+--
+
+* providing a way to lift a regular function into that type, `Argument[A]`.
+
+--
+
+We've only seen it work with `Boolean` and `Unit` though...
+
+---
+
+class: center, middle
+
+# `A ≃ B`
+
+---
+
+## `Answer ≃ Boolean`
+
 ```scala
 sealed trait Answer
 
@@ -459,7 +610,30 @@ object Answer {
 
 ---
 
-## Placeholder
+## `Answer =>> C`
+
+```scala
+def answer[C](
+  to  : Answer => Boolean,
+  from: Boolean => Answer,
+  f   : Boolean =>> C
+): (Answer =>> C) =
+  fun(
+    eval     = to andThen f,
+
+    values   = f.table.map {
+      case (b, c) => (from(b), c)
+    },
+
+    shrinker = shrinkC => f.
+      shrink(shrinkC).
+      map { b2c => answer(to, from, b2c) }
+  )
+```
+
+---
+
+## `Answer =>> C`
 
 ```scala
 def imap[A, B, C](
@@ -482,6 +656,8 @@ def imap[A, B, C](
 
 ---
 
+## Generating `Answer =>> C`
+
 ```scala
 implicit val argAnswer = new Argument[Answer] {
   val to: Answer => Boolean = {
@@ -501,21 +677,7 @@ implicit val argAnswer = new Argument[Answer] {
 
 ---
 
-```scala
-val propAnswer = forAll { (f: Answer => Int) =>
-  f(Answer.Yes) == f(Answer.No)
-}
-```
-
---
-
-```scala
-validate(propAnswer)
-// ✖ Failed with:
-//  - ARG_0: {Yes => 0, No => 1}
-```
-
----
+## Generating `Answer =>> C`
 
 ```scala
 def argMap[A, B: Argument](to: A => B, from: B => A) =
@@ -526,6 +688,8 @@ def argMap[A, B: Argument](to: A => B, from: B => A) =
 ```
 
 ---
+
+## Generating `Answer =>> C`
 
 ```scala
 implicit val argAnswer = {
@@ -545,6 +709,8 @@ implicit val argAnswer = {
 
 ---
 
+## Generating `Answer =>> C`
+
 ```scala
 val propAnswer = forAll { (f: Answer => Int) =>
   f(Answer.Yes) == f(Answer.No)
@@ -561,22 +727,31 @@ validate(propAnswer)
 
 ---
 
-At this point we've done something fairly nice: we've expressed an `Argument` for a given type in terms of a pre-existing instance for an equivalent type.
+## Key takeaways
 
-This is where we dig in our theorical knowledge to remember that types of equal arity were equivalent: it's always possible to have a mapping from one to the other and back.
+We can write `A =>> C` for any `A` given:
+--
 
-What if we provided the basic building blocks?
+* a type `B` equivalent to `A`.
+--
+
+* a way of building `B =>> C`.
+
+---
+
+class: center, middle
+
+# Algebraic data types
 
 ---
 
-Either, which is pretty simple: `Either[A, B] =>> C`.
+class: center, middle
 
-A sum type is a discriminated union of values. So `Either[A, B]` is really `Left(a)` union `Right(b)`.
-
-Similarly: `Either[A, B] =>> C` is really `Left[A] =>> C` union `Right[B] =>> C`
-
+# Sum types
 
 ---
+
+## `Either[A, B] =>> C`
 
 ```scala
 def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
@@ -593,16 +768,10 @@ def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
 
 ---
 
-We have a problem. `FunLeft` is suddenly not defined for all of its domain.
-
-But... that's not a *problem*, it's a feature! We want to shrink our functions, right? This allows us to shrink their domains, removing entire swathes of possible values in one go.
-
-This requires some refactoring though...
-
----
 
 
 
+## Partial `A =>> C`
 
 ```scala
 trait =>>[A, C] extends (A => Option[C]) {
@@ -618,6 +787,8 @@ trait =>>[A, C] extends (A => Option[C]) {
 ```
 
 ---
+
+## Partial `A =>> C`
 
 ```scala
 def fun[A, C](
@@ -636,35 +807,51 @@ def fun[A, C](
 
 ---
 
+## Partial `Unit =>> C`
+
 ```scala
 def unit[C](value: C): (Unit =>> C) = fun(
   eval     = _ => Some(value),
+
   values   = List(() -> value),
+
   shrinker = shrinkC => shrinkC(value).map(unit)
 )
 ```
 
 ---
 
+## Partial `Unit =>> C`
+
 ```scala
 def void[A, C]: (A =>> C) = fun(
   eval     = _ => None,
+
   values   = List.empty,
+
   shrinker = _ => Stream.empty
 )
 ```
 
 ---
 
+## Partial `Unit =>> C`
+
 ```scala
 def unit[C](value: C): (Unit =>> C) = fun(
   eval     = _ => Some(value),
+
   values   = List(() -> value),
-  shrinker = shrinkC => void[Unit, C] #:: shrinkC(value).map(unit)
+
+  shrinker = shrinkC =>
+    void[Unit, C] #::
+    shrinkC(value).map(unit)
 )
 ```
 
 ---
+
+## Partial `A =>> C`
 
 ```scala
 def imap[A, B, C](
@@ -685,9 +872,7 @@ def imap[A, B, C](
 
 ---
 
-Good opportunity to revisit the current infra we developed.
-
----
+## Partial `A =>> C`
 
 ```scala
 trait Argument[A] {
@@ -701,19 +886,29 @@ object Argument {
 
 ---
 
+## Partial `A =>> C`
 
 ```scala
 implicit def argUnit = new Argument[Unit] {
   override def build[C](f: Unit => C) = unit(f())
 }
-
-def argMap[A, B: Argument](to: A => B, from: B => A) = new Argument[A] {
-  override def build[C](f: A => C) = imap(to, from, Argument[B].build(from andThen f))
-}
 ```
 
+---
+
+## Partial `A =>> C`
+
+```scala
+def argMap[A, B: Argument](to: A => B, from: B => A) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, Argument[B].build(from andThen f))
+  }
+```
 
 ---
+
+## Partial `A =>> C`
 
 ```scala
 implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
@@ -730,9 +925,7 @@ implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
 
 ---
 
-We can't do that, because `=>>` is partial, and we're working with total functions. We need some way of turning a `=>>` into a total function.
-
----
+## Total `A =>> C`
 
 ```scala
 case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
@@ -754,6 +947,8 @@ case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
 
 ---
 
+## Total `A =>> C`
+
 ```scala
 def genFun[A: Argument: Cogen, C: Arbitrary] =
   Gen.function1[A, C](arbitrary[C]).
@@ -768,6 +963,8 @@ implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
 
 ---
 
+## Total `A =>> C`
+
 ```scala
 implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
 
@@ -779,37 +976,48 @@ implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
 
 ---
 
+## `Either[A, B] =>> C`
+
 ```scala
 def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
-  eval = {
+  eval     = {
     case Left(a)  => f(a)
     case Right(_) => None
   },
-  values = f.table.map { case (a, c) => (Left(a), c) },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
   shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
 )
 ```
+
 ---
+
+## `Either[A, B] =>> C`
 
 ```scala
 def right[A, B, C](f: B =>> C): (Either[A, B] =>> C) = fun(
-  eval = {
+  eval     = {
     case Left(_)  => None
     case Right(b) => f(b)
   },
-  values = f.table.map { case (b, c) => (Right(b), c) },
+
+  values   = f.table.map { case (b, c) => (Right(b), c) },
+
   shrinker = shrinkC => f.shrink(shrinkC).map(b2c => right(b2c))
 )
 ```
 
 ---
 
+## `Either[A, B] =>> C`
+
 ```scala
 def union[A, C](f1: A =>> C, f2: A =>> C): (A =>> C) = fun(
 
-  eval = a => f1(a).orElse(f2(a)),
+  eval     = a => f1(a).orElse(f2(a)),
 
-  values = f1.table ++ f2.table,
+  values   = f1.table ++ f2.table,
 
   shrinker = shrinkC =>
     f1                                          #::
@@ -821,16 +1029,21 @@ def union[A, C](f1: A =>> C, f2: A =>> C): (A =>> C) = fun(
 
 ---
 
+## `Either[A, B] =>> C`
+
 ```scala
-implicit def argEither[A: Argument, B: Argument] = new Argument[Either[A, B]] {
-  override def build[C](f: Either[A, B] => C) = union(
-   left(Argument[A].build(a => f(Left(a)))),
-   right(Argument[B].build(b => f(Right(b))))
-  )
-}
+implicit def argEither[A: Argument, B: Argument] =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) = union(
+      left(Argument[A].build(a => f(Left(a)))),
+      right(Argument[B].build(b => f(Right(b))))
+    )
+  }
 ```
 
 ---
+
+## `Boolean =>> C`
 
 ```scala
 implicit val boolArg = {
@@ -853,6 +1066,8 @@ implicit val boolArg = {
 
 ---
 
+## `Boolean =>> C`
+
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
   f(true) == f(false)
@@ -869,6 +1084,8 @@ validate(propBool)
 
 ---
 
+## `Trilean =>> C`
+
 ```scala
 sealed trait Trilean
 
@@ -881,7 +1098,7 @@ object Trilean {
 
 ---
 
-## Placeholder
+## `Trilean =>> C`
 
 ```scala
 implicit val argTrilean = {
@@ -906,6 +1123,8 @@ implicit val argTrilean = {
 
 ---
 
+## `Trilean =>> C`
+
 ```scala
 val propTrilean = forAll { (f: Trilean => Int) =>
   f(Trilean.True) == f(Trilean.False)
@@ -922,7 +1141,58 @@ validate(propTrilean)
 
 ---
 
-## Placeholder
+## `Option[A] =>> C`
+
+```scala
+implicit def argOption[A: Argument] = {
+
+  type Repr = Either[Unit, A]
+
+  val to: Option[A] => Repr = {
+    case Some(a) => Right(a)
+    case None    => Left(())
+  }
+
+  val from: Repr => Option[A] = {
+    case Right(a) => Some(a)
+    case Left(_)  => None
+  }
+
+  argMap(to, from)
+}
+```
+
+---
+
+## `Option[A] =>> C`
+
+```scala
+val propOption = forAll { (f: Option[Boolean] => Int) =>
+  f(None) == f(Some(true))
+}
+```
+
+--
+
+```scala
+validate(propOption)
+// ✖ Failed with:
+//  - ARG_0: {Some(true) => 0, _ => -1}
+```
+
+---
+
+## Key takeaways
+
+---
+
+class: center, middle
+
+# Product types
+
+---
+
+## `(A, B) =>> C`
 
 ```scala
 def couple[A, B, C](f: A =>> (B =>> C)): ((A, B) =>> C) = fun(
@@ -947,15 +1217,20 @@ def couple[A, B, C](f: A =>> (B =>> C)): ((A, B) =>> C) = fun(
 
 ---
 
+## `(A, B) =>> C`
+
 ```scala
-implicit def argTuple[A: Argument, B: Argument] = new Argument[(A, B)] {
-  override def build[C](f: ((A, B)) => C) = couple(
-    Argument[A].build(a => Argument[B].build(b => f((a, b))))
-  )
-}
+implicit def argTuple[A: Argument, B: Argument] =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      Argument[A].build(a => Argument[B].build(b => f((a, b))))
+    )
+  }
 ```
 
 ---
+
+## `(A, B) =>> C`
 
 ```scala
 case class BoolPair(b1: Boolean, b2: Boolean)
@@ -977,6 +1252,8 @@ implicit val argBoolPair = {
 
 ---
 
+## `(A, B) =>> C`
+
 ```scala
 val propBoolPair = forAll { (f: BoolPair => Int) =>
   f(BoolPair(true, false)) == f(BoolPair(false, true))
@@ -993,42 +1270,13 @@ validate(propBoolPair)
 
 ---
 
-```scala
-implicit def argOption[A: Argument] = {
+class: center, middle
 
-  type Repr = Either[Unit, A]
-
-  val to: Option[A] => Repr = {
-    case Some(a) => Right(a)
-    case None    => Left(())
-  }
-
-  val from: Repr => Option[A] = {
-    case Right(a) => Some(a)
-    case Left(_)  => None
-  }
-
-  argMap(to, from)
-}
-```
+# Recursive types
 
 ---
 
-```scala
-val propOption = forAll { (f: Option[Boolean] => Int) =>
-  f(None) == f(Some(true))
-}
-```
-
---
-
-```scala
-validate(propOption)
-// ✖ Failed with:
-//  - ARG_0: {Some(true) => 0, _ => -1}
-```
-
----
+## `List[A] =>> C`
 
 ```scala
 implicit def argList[A: Argument]: Argument[List[A]] = {
@@ -1050,6 +1298,8 @@ implicit def argList[A: Argument]: Argument[List[A]] = {
 ```
 
 ---
+
+## `List[A] =>> C`
 
 .foreground[![Big badaboom](img/large-explosion.png)]
 
@@ -1074,6 +1324,8 @@ implicit def argList[A: Argument]: Argument[List[A]] = {
 
 ---
 
+## Lazy `A =>> C`
+
 ```scala
 def imap[A, B, C](
   to  : A => B,
@@ -1093,13 +1345,19 @@ def imap[A, B, C](
 
 ---
 
+## Lazy `A =>> C`
+
 ```scala
-def argMap[A, B](to: A => B, from: B => A)(implicit argB: => Argument[B]) = new Argument[A] {
-  override def build[C](f: A => C) = imap(to, from, argB.build(from andThen f))
-}
+def argMap[A, B](to: A => B, from: B => A)(implicit argB: => Argument[B]) =
+  new Argument[A] {
+    override def build[C](f: A => C) =
+      imap(to, from, argB.build(from andThen f))
+  }
 ```
 
 ---
+
+## Lazy `A =>> C`
 
 ```scala
 def left[A, B, C](f: => A =>> C): (Either[A, B] =>> C) = fun(
@@ -1111,7 +1369,10 @@ def left[A, B, C](f: => A =>> C): (Either[A, B] =>> C) = fun(
   shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
 )
 ```
+
 ---
+
+## Lazy `A =>> C`
 
 ```scala
 def right[A, B, C](f: => B =>> C): (Either[A, B] =>> C) = fun(
@@ -1125,6 +1386,8 @@ def right[A, B, C](f: => B =>> C): (Either[A, B] =>> C) = fun(
 ```
 
 ---
+
+## Lazy `A =>> C`
 
 ```scala
 def union[A, C](f1: => A =>> C, f2: => A =>> C): (A =>> C) = fun(
@@ -1143,16 +1406,21 @@ def union[A, C](f1: => A =>> C, f2: => A =>> C): (A =>> C) = fun(
 
 ---
 
+## Lazy `A =>> C`
+
 ```scala
-implicit def argEither[A, B](implicit argA: => Argument[A], argB: => Argument[B]) = new Argument[Either[A, B]] {
-  override def build[C](f: Either[A, B] => C) = union(
-   left(argA.build(a => f(Left(a)))),
-   right(argB.build(b => f(Right(b))))
-  )
-}
+implicit def argEither[A, B](implicit argA: => Argument[A], argB: => Argument[B]) =
+  new Argument[Either[A, B]] {
+    override def build[C](f: Either[A, B] => C) = union(
+     left(argA.build(a => f(Left(a)))),
+     right(argB.build(b => f(Right(b))))
+    )
+  }
 ```
 
 ---
+
+## Lazy `A =>> C`
 
 ```scala
 def couple[A, B, C](f: => A =>> (B =>> C)): ((A, B) =>> C) = fun(
@@ -1177,15 +1445,20 @@ def couple[A, B, C](f: => A =>> (B =>> C)): ((A, B) =>> C) = fun(
 
 ---
 
+## Lazy `A =>> C`
+
 ```scala
-implicit def argTuple[A, B](implicit argA: => Argument[A], argB: => Argument[B]) = new Argument[(A, B)] {
-  override def build[C](f: ((A, B)) => C) = couple(
-    argA.build(a => argB.build(b => f((a, b))))
-  )
-}
+implicit def argTuple[A, B](implicit argA: => Argument[A], argB: => Argument[B]) =
+  new Argument[(A, B)] {
+    override def build[C](f: ((A, B)) => C) = couple(
+      argA.build(a => argB.build(b => f((a, b))))
+    )
+  }
 ```
 
 ---
+
+## `List[A] =>> C`
 
 ```scala
 implicit def argList[A: Argument]: Argument[List[A]] = {
@@ -1208,6 +1481,8 @@ implicit def argList[A: Argument]: Argument[List[A]] = {
 
 ---
 
+## `List[A] =>> C`
+
 ```scala
 val propList = forAll { (f: List[Boolean] => Int) =>
   f(List.empty) == f(List(true))
@@ -1224,7 +1499,21 @@ validate(propList)
 
 ---
 
-## Placeholder
+## Key takeaways
+
+--
+
+In order to support recursive types, we had to make everything lazy.
+
+---
+
+class: center, middle
+
+# All the types
+
+---
+
+## `Int =>> C`
 
 ```scala
 implicit def argInt: Argument[Int] = {
@@ -1251,6 +1540,8 @@ implicit def argInt: Argument[Int] = {
 
 ---
 
+## `Int =>> C`
+
 ```scala
 val propInt = forAll { (f: Int => Int) =>
   f(1) == f(2)
@@ -1267,12 +1558,16 @@ validate(propInt)
 
 ---
 
+## `Char =>> C`
+
 ```scala
 implicit val argChar: Argument[Char] =
   argMap[Char, Int](_.toInt, _.toChar)
 ```
 
 ---
+
+## `Char =>> C`
 
 ```scala
 val propChar = forAll { (f: Char => Int) =>
@@ -1290,12 +1585,16 @@ validate(propChar)
 
 ---
 
+## `String =>> C`
+
 ```scala
 implicit val argString: Argument[String] =
   argMap[String, List[Char]](_.toList, _.mkString)
 ```
 
 ---
+
+## `String =>> C`
 
 ```scala
 val propString = forAll { (f: String => Int) =>
@@ -1312,6 +1611,8 @@ validate(propString)
 ```
 
 ---
+
+## Finally, the answer
 
 ```scala
 val propMapFilter = forAll { (
@@ -1332,6 +1633,16 @@ validate(propMapFilter)
 //  - ARG_1: {_ => -3}
 //  - ARG_2: {-3 => false, _ => true}
 ```
+
+---
+
+class: center, middle
+
+# In closing
+
+---
+
+## If you only remember 1 slide...
 
 ---
 
