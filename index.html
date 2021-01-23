@@ -9,7 +9,7 @@
         <textarea id="source">
 class: center, middle
 
-# Shrinking and showing functions (in Scala)
+# Shrinking and showing functions
 
 Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
 
@@ -28,6 +28,7 @@ val propReverseAppend = forAllNoShrink { (
     xs.reverse ++ ys.reverse == (xs ++ ys).reverse
 }
 ```
+
 --
 
 ```scala
@@ -36,6 +37,21 @@ validate(propReverseAppend)
 //  - ARG_0: List(2147483647, -416991762, 1919426110, 214748364…
 //  - ARG_1: List(1983671757, 1143650104, -756315050, 181756746…
 ```
+
+---
+
+## A simple property
+
+.diff-rm[
+```scala
+*val propReverseAppend = forAll`NoShrink` { (
+    xs: List[Int],
+    ys: List[Int]
+  ) =>
+    xs.reverse ++ ys.reverse == (xs ++ ys).reverse
+}
+```
+]
 
 ---
 
@@ -86,6 +102,22 @@ validate(propMapFilter)
 
 class: center, middle
 
+# Shrinking and showing functions
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
+# Shrinking and showing functions (in Scala)
+
+Nicolas Rinaudo • [@NicolasRinaudo] • [Besedo]
+
+---
+
+class: center, middle
+
 # `Unit => C`
 
 ---
@@ -111,11 +143,11 @@ validate(propUnit)
 ## Showing `Unit => C`
 
 ```scala
-case class UnitFun[C](value: C) extends (Unit => C) {
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = value
+  override def apply(u: Unit) = f()
 
-  override def toString = s"{() => $value}"
+  override def toString = s"{() => ${f()}}"
 }
 ```
 
@@ -125,7 +157,8 @@ case class UnitFun[C](value: C) extends (Unit => C) {
 
 ```scala
 implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
-  arbitrary[C].map(UnitFun.apply)
+  Gen.function1[Unit, C](arbitrary[C]).
+    map(UnitFun.apply)
 )
 ```
 
@@ -144,7 +177,7 @@ val propUnit = forAll { (f: Unit => Int) =>
 ```scala
 validate(propUnit)
 // ✖ Failed with:
-//  - ARG_0: {() => 581163233}
+//  - ARG_0: {() => 1862882517}
 ```
 
 ---
@@ -153,7 +186,9 @@ validate(propUnit)
 
 ```scala
 implicit def shrinkUnitFun[C: Shrink] = Shrink[UnitFun[C]] {
-  case UnitFun(c) => shrink(c).map(UnitFun.apply)
+  case UnitFun(f) =>
+    shrink(f()).
+      map(c => UnitFun(_ => c))
 }
 ```
 
@@ -172,7 +207,7 @@ val propUnit = forAll { (f: Unit => Int) =>
 ```scala
 validate(propUnit)
 // ✖ Failed with:
-//  - ARG_0: {() => 581163233}
+//  - ARG_0: {() => 1862882517}
 ```
 
 ---
@@ -184,7 +219,7 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 
   case f: UnitFun[C] => shrink(f)
 
-  case _          => Stream.empty
+  case _             => Stream.empty
 }
 ```
 
@@ -617,8 +652,8 @@ def answer[C](
   to  : Answer => Boolean,
   from: Boolean => Answer,
   f   : Boolean =>> C
-): (Answer =>> C) =
-  fun(
+): (Answer =>> C) = fun(
+
     eval     = to andThen f,
 
     values   = f.table.map {
@@ -645,7 +680,7 @@ def imap[A, B, C](
     eval     = to andThen f,
 
     values   = f.table.map {
-      case (b, c) => (from(b),  c)
+      case (b, c) => (from(b), c)
     },
 
     shrinker = shrinkC => f.
@@ -737,11 +772,6 @@ We can write `A =>> C` for any `A` given:
 
 * a way of building `B =>> C`.
 
----
-
-class: center, middle
-
-# Algebraic data types
 
 ---
 
@@ -755,8 +785,9 @@ class: center, middle
 
 ```scala
 def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
+
   eval     = {
-    case Left(a) => f(a)
+    case Left(a)  => f(a)
     case Right(_) => ???
   },
 
@@ -950,13 +981,13 @@ case class Fun[A, C](fun: A =>> C, undef: C) extends (A => C) {
 ## Total `A =>> C`
 
 ```scala
-def genFun[A: Argument: Cogen, C: Arbitrary] =
+def genShrinkableFun[A: Argument: Cogen, C: Arbitrary] =
   Gen.function1[A, C](arbitrary[C]).
     map(Argument[A].build)
 
 implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
   Arbitrary[A => C](for {
-    fun   <- genFun[A, C]
+    fun   <- genShrinkableFun[A, C]
     undef <- arbitrary[C]
   } yield Fun(fun, undef))
 ```
@@ -980,6 +1011,7 @@ implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
 
 ```scala
 def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
+
   eval     = {
     case Left(a)  => f(a)
     case Right(_) => None
@@ -997,6 +1029,7 @@ def left[A, B, C](f: A =>> C): (Either[A, B] =>> C) = fun(
 
 ```scala
 def right[A, B, C](f: B =>> C): (Either[A, B] =>> C) = fun(
+
   eval     = {
     case Left(_)  => None
     case Right(b) => f(b)
@@ -1348,7 +1381,9 @@ def imap[A, B, C](
 ## Lazy `A =>> C`
 
 ```scala
-def argMap[A, B](to: A => B, from: B => A)(implicit argB: => Argument[B]) =
+def argMap[A, B](to: A => B, from: B => A)(
+  implicit argB: => Argument[B]
+) =
   new Argument[A] {
     override def build[C](f: A => C) =
       imap(to, from, argB.build(from andThen f))
@@ -1361,11 +1396,14 @@ def argMap[A, B](to: A => B, from: B => A)(implicit argB: => Argument[B]) =
 
 ```scala
 def left[A, B, C](f: => A =>> C): (Either[A, B] =>> C) = fun(
-  eval = {
+
+  eval     = {
     case Left(a)  => f(a)
     case Right(_) => None
   },
-  values = f.table.map { case (a, c) => (Left(a), c) },
+
+  values   = f.table.map { case (a, c) => (Left(a), c) },
+
   shrinker = shrinkC => f.shrink(shrinkC).map(a2c => left(a2c))
 )
 ```
@@ -1376,11 +1414,14 @@ def left[A, B, C](f: => A =>> C): (Either[A, B] =>> C) = fun(
 
 ```scala
 def right[A, B, C](f: => B =>> C): (Either[A, B] =>> C) = fun(
-  eval = {
+
+  eval     = {
     case Left(_)  => None
     case Right(b) => f(b)
   },
-  values = f.table.map { case (b, c) => (Right(b), c) },
+
+  values   = f.table.map { case (b, c) => (Right(b), c) },
+
   shrinker = shrinkC => f.shrink(shrinkC).map(b2c => right(b2c))
 )
 ```
@@ -1392,9 +1433,9 @@ def right[A, B, C](f: => B =>> C): (Either[A, B] =>> C) = fun(
 ```scala
 def union[A, C](f1: => A =>> C, f2: => A =>> C): (A =>> C) = fun(
 
-  eval = a => f1(a).orElse(f2(a)),
+  eval     = a => f1(a).orElse(f2(a)),
 
-  values = f1.table ++ f2.table,
+  values   = f1.table ++ f2.table,
 
   shrinker = shrinkC =>
     f1                                          #::
@@ -1409,7 +1450,9 @@ def union[A, C](f1: => A =>> C, f2: => A =>> C): (A =>> C) = fun(
 ## Lazy `A =>> C`
 
 ```scala
-implicit def argEither[A, B](implicit argA: => Argument[A], argB: => Argument[B]) =
+implicit def argEither[A, B](
+  implicit argA: => Argument[A], argB: => Argument[B]
+) =
   new Argument[Either[A, B]] {
     override def build[C](f: Either[A, B] => C) = union(
      left(argA.build(a => f(Left(a)))),
@@ -1448,7 +1491,9 @@ def couple[A, B, C](f: => A =>> (B =>> C)): ((A, B) =>> C) = fun(
 ## Lazy `A =>> C`
 
 ```scala
-implicit def argTuple[A, B](implicit argA: => Argument[A], argB: => Argument[B]) =
+implicit def argTuple[A, B](
+  implicit argA: => Argument[A], argB: => Argument[B]
+) =
   new Argument[(A, B)] {
     override def build[C](f: ((A, B)) => C) = couple(
       argA.build(a => argB.build(b => f((a, b))))
