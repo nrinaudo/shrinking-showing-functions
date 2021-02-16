@@ -385,9 +385,11 @@ validate(propUnit)
 ```scala
 case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def toString = s"{() => ${f()}}"
+  override def toString =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -398,9 +400,11 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 ```scala
 case class `UnitFun`[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def toString = s"{() => ${f()}}"
+  override def toString =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -411,9 +415,11 @@ case class `UnitFun`[C](f: Unit => C) extends (Unit => C) {
 ```scala
 case class UnitFun[C](`f: Unit => C`) extends (Unit => C) {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def toString = s"{() => ${f()}}"
+  override def toString =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -422,24 +428,13 @@ case class UnitFun[C](`f: Unit => C`) extends (Unit => C) {
 ## Showing `Unit => C`
 
 ```scala
-case class UnitFun[C](f: Unit => C) `extends (Unit => C)` {
+case class UnitFun[C](f: Unit => C) extends `(Unit => C)` {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def toString = s"{() => ${f()}}"
-}
-```
-
----
-
-## Showing `Unit => C`
-
-```scala
-case class UnitFun[C](f: Unit => C) extends (Unit => C) {
-
-  override def `apply(u: Unit)` = f()
-
-  override def toString = s"{() => ${f()}}"
+  override def toString =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -450,9 +445,26 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 ```scala
 case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = `f()`
+  override def `apply(u: Unit)` =
+    f()
 
-  override def toString = s"{() => ${f()}}"
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## Showing `Unit => C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
+
+  override def apply(u: Unit) =
+    `f()`
+
+  override def toString =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -464,9 +476,11 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 ```scala
 case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def `toString` = s"{() => ${f()}}"
+  override def `toString` =
+    s"{() => ${f()}}"
 }
 ```
 
@@ -477,9 +491,11 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 ```scala
 case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  override def apply(u: Unit) = f()
+  override def apply(u: Unit) =
+    f()
 
-  override def toString = s"{`() => ${f()}`}"
+  override def toString =
+    s"{`() => ${f()}`}"
 }
 ```
 
@@ -489,10 +505,11 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 ## Showing `Unit => C`
 
 ```scala
-implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
-  Gen.function1[Unit, C](arbitrary[C]).
-    map(f => UnitFun(f))
-)
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
 ```
 
 ---
@@ -500,10 +517,11 @@ implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
 ## Showing `Unit => C`
 
 ```scala
-&#x200B;`implicit` def arbUnitFun[C: Arbitrary] = `Arbitrary[Unit => C]`(
-  Gen.function1[Unit, C](arbitrary[C]).
-    map(f => UnitFun(f))
-)
+implicit def arbUnitFun[C: Arbitrary] =
+  `Arbitrary[Unit => C]` {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
 ```
 
 ---
@@ -511,10 +529,11 @@ implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
 ## Showing `Unit => C`
 
 ```scala
-implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
-  Gen.`function1[Unit, C]`(arbitrary[C]).
-    map(f => UnitFun(f))
-)
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.`function1[Unit, C]`(arbitrary[C]).
+      map(f => UnitFun(f))
+  }
 ```
 
 ---
@@ -522,10 +541,11 @@ implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
 ## Showing `Unit => C`
 
 ```scala
-implicit def arbUnitFun[C: Arbitrary] = Arbitrary[Unit => C](
-  Gen.function1[Unit, C](arbitrary[C]).
-    map(`f => UnitFun(f)`)
-)
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(`f => UnitFun(f)`)
+  }
 ```
 
 
@@ -538,8 +558,6 @@ val propUnit = forAll { (f: Unit => Int) =>
   f() == 0
 }
 ```
-
---
 
 ```scala
 validate(propUnit)
@@ -568,15 +586,15 @@ validate(propUnit)
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
 
-  case UnitFun(f) =>
-    shrink(f()).
-      map(c => UnitFun(_ => c))
-
-  case _          =>
-    Stream.empty
-}
+    case _          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -584,15 +602,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-&#x200B;`implicit` def shrinkUnit[C: Shrink] = `Shrink[Unit => C]` {
+implicit def shrinkUnit[C: Shrink] =
+  `Shrink[Unit => C]` {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
 
-  case UnitFun(f) =>
-    shrink(f()).
-      map(c => UnitFun(_ => c))
-
-  case _          =>
-    Stream.empty
-}
+    case _          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -600,15 +618,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    `case UnitFun(f)` =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
 
-  `case UnitFun(f)` =>
-    shrink(f()).
-      map(c => UnitFun(_ => c))
-
-  case _          =>
-    Stream.empty
-}
+    case _          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -616,15 +634,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      `shrink(f())`.
+        map(c => UnitFun(_ => c))
 
-  case UnitFun(f) =>
-    `shrink(f())`.
-      map(c => UnitFun(_ => c))
-
-  case _          =>
-    Stream.empty
-}
+    case _          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -632,15 +650,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(`c => UnitFun(_ => c)`)
 
-  case UnitFun(f) =>
-    shrink(f()).
-      map(`c => UnitFun(_ => c)`)
-
-  case _          =>
-    Stream.empty
-}
+    case _          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -648,15 +666,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
 
-  case UnitFun(f) =>
-    shrink(f()).
-      map(c => UnitFun(_ => c))
-
-  `case _`          =>
-    Stream.empty
-}
+    `case _`          =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -664,15 +682,15 @@ implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
 ## Shrinking `Unit => C`
 
 ```scala
-implicit def shrinkUnit[C: Shrink] = Shrink[Unit => C] {
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
 
-  case UnitFun(f) =>
-    shrink(f()).
-      map(c => UnitFun(_ => c))
-
-  case _          =>
-    `Stream.empty`
-}
+    case _          =>
+      `Stream.empty`
+  }
 ```
 
 ---
@@ -684,8 +702,6 @@ val propUnit = forAll { (f: Unit => Int) =>
   f() == 0
 }
 ```
-
---
 
 ```scala
 validate(propUnit)
@@ -800,7 +816,8 @@ validate(propBool)
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -814,7 +831,8 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class `BoolFun`[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -828,7 +846,8 @@ case class `BoolFun`[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class BoolFun[C](`f: Boolean => C`) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -840,23 +859,10 @@ case class BoolFun[C](`f: Boolean => C`) extends (Boolean => C) {
 ## Showing `Boolean => C`
 
 ```scala
-case class BoolFun[C](f: Boolean => C) `extends (Boolean => C)` {
+case class BoolFun[C](f: Boolean => C) extends `(Boolean => C)` {
 
-  override def apply(b: Boolean) = f(b)
-
-  override def toString =
-    s"{true => ${f(true)}, false => ${f(false)}}"
-}
-```
-
----
-
-## Showing `Boolean => C`
-
-```scala
-case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
-
-  override def `apply(b: Boolean)` = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -870,7 +876,8 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = `f(b)`
+  override def `apply(b: Boolean)` =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -884,7 +891,23 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    `f(b)`
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
 
   override def `toString` =
     s"{true => ${f(true)}, false => ${f(false)}}"
@@ -898,7 +921,8 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{`true => ${f(true)}`, false => ${f(false)}}"
@@ -912,7 +936,8 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ```scala
 case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  override def apply(b: Boolean) = f(b)
+  override def apply(b: Boolean) =
+    f(b)
 
   override def toString =
     s"{true => ${f(true)}, `false => ${f(false)}`}"
@@ -924,10 +949,11 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ## Showing `Boolean => C`
 
 ```scala
-implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
-  Gen.function1[Boolean, C](arbitrary[C]).
-    map(f => BoolFun(f))
-}
+implicit def arbBoolean[C: Arbitrary] =
+  Arbitrary[Boolean => C] {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(f => BoolFun(f))
+  }
 ```
 
 ---
@@ -935,10 +961,11 @@ implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
 ## Showing `Boolean => C`
 
 ```scala
-&#x200B;`implicit` def arbBoolean[C: Arbitrary] = `Arbitrary[Boolean => C]` {
-  Gen.function1[Boolean, C](arbitrary[C]).
-    map(f => BoolFun(f))
-}
+implicit def arbBoolean[C: Arbitrary] =
+  `Arbitrary[Boolean => C]` {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(f => BoolFun(f))
+  }
 ```
 
 ---
@@ -946,10 +973,11 @@ implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
 ## Showing `Boolean => C`
 
 ```scala
-implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
-  Gen.`function1[Boolean, C]`(arbitrary[C]).
-    map(f => BoolFun(f))
-}
+implicit def arbBoolean[C: Arbitrary] =
+  Arbitrary[Boolean => C] {
+    Gen.`function1[Boolean, C]`(arbitrary[C]).
+      map(f => BoolFun(f))
+  }
 ```
 
 ---
@@ -957,10 +985,11 @@ implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
 ## Showing `Boolean => C`
 
 ```scala
-implicit def arbBoolean[C: Arbitrary] = Arbitrary[Boolean => C] {
-  Gen.function1[Boolean, C](arbitrary[C]).
-    map(`f => BoolFun(f)`)
-}
+implicit def arbBoolean[C: Arbitrary] =
+  Arbitrary[Boolean => C] {
+    Gen.function1[Boolean, C](arbitrary[C]).
+      map(`f => BoolFun(f)`)
+  }
 ```
 
 
@@ -973,8 +1002,6 @@ val propBool = forAll { (f: Boolean => Int) =>
   f(true) == f(false)
 }
 ```
-
---
 
 ```scala
 validate(propBool)
@@ -1004,22 +1031,22 @@ validate(propBool)
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1027,22 +1054,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-&#x200B;`implicit` def shrinkBool[C: Shrink] = `Shrink[Boolean => C]` {
+implicit def shrinkBool[C: Shrink] =
+  `Shrink[Boolean => C]` {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1050,22 +1077,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    `case BoolFun(f)` =>
 
-  `case BoolFun(f)` =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1073,22 +1100,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      `shrink(f(true))`.map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    `shrink(f(true))`.map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1096,22 +1123,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(`b => copy(onTrue = b)`)   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(`b => bool(onTrue = b)`)   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1119,22 +1146,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      `shrink(f(false))`.map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    `shrink(f(false))`.map(b => bool(onFalse = b))
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1142,22 +1169,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(`b => copy(onFalse = b)`)
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(`b => bool(onFalse = b)`)
-
-  case _ =>
-    Stream.empty
-}
+    case _ =>
+      Stream.empty
+  }
 ```
 
 
@@ -1166,22 +1193,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  `case _` =>
-    Stream.empty
-}
+    `case _` =>
+      Stream.empty
+  }
 ```
 
 ---
@@ -1189,22 +1216,22 @@ implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
 ## Shrinking `Boolean => C`
 
 ```scala
-implicit def shrinkBool[C: Shrink] = Shrink[Boolean => C] {
+implicit def shrinkBool[C: Shrink] =
+  Shrink[Boolean => C] {
+    case BoolFun(f) =>
 
-  case BoolFun(f) =>
+      def copy(onTrue: C = f(true), onFalse: C = f(false)) =
+        BoolFun {
+          case true  => onTrue
+          case false => onFalse
+        }
 
-    def bool(onTrue: C = f(true), onFalse: C = f(false)) =
-      BoolFun {
-        case true  => onTrue
-        case false => onFalse
-      }
+      shrink(f(true)).map(b => copy(onTrue = b))   #:::
+      shrink(f(false)).map(b => copy(onFalse = b))
 
-    shrink(f(true)).map(b => bool(onTrue = b))   #:::
-    shrink(f(false)).map(b => bool(onFalse = b))
-
-  case _ =>
-    `Stream.empty`
-}
+    case _ =>
+      `Stream.empty`
+  }
 ```
 
 ---
@@ -1274,15 +1301,63 @@ class: center, middle
 ## `A =>> C`
 
 ```scala
-trait =>>[A, C] extends (A => C) {
+case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 
-  def table: List[(A, C)]
+  override def apply(b: Boolean) =
+    f(b)
 
-  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
 
-  override def toString = table.map { case (in, out) =>
-    s"$in => $out" }.mkString("{", ", ", "}")
-  }
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*case class `BoolFun`[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*case class `=>>`[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
 ```
 
 ---
@@ -1290,17 +1365,592 @@ trait =>>[A, C] extends (A => C) {
 ## `A =>> C`
 
 ```scala
-def fun[A, C](
-  eval    : A => C,
-  values  : => List[(A, C)],
-  shrinker: (C => Stream[C]) => Stream[A =>> C]
-) = new (A =>> C) {
+case class =>>[C](f: `Boolean` => C) extends (`Boolean` => C) {
 
-  override def apply(a: A) = eval(a)
+  override def apply(b: `Boolean`) =
+    f(b)
 
-  override def table = values
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
 
-  override def shrink(shrinkC: C => Stream[C]) = shrinker(shrinkC)
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*case class =>>[`A, `C](f: Boolean => C) extends (Boolean => C) {
+
+  override def apply(b: Boolean) =
+    f(b)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*case class =>>[A, C](f: `Boolean` => C) extends (`Boolean` => C) {
+
+* override def apply(`b: Boolean`) =
+*   f(`b`)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*case class =>>[A, C](f: `A` => C) extends (`A` => C) {
+
+* override def apply(`a: A`) =
+*   f(`a`)
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  override def toString =
+    s"{true => ${`f(true)`}, false => ${`f(false)`}}"
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+* `def table: List[A] = ???`
+
+  override def toString =
+    s"{true => ${f(true)}, false => ${f(false)}}"
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+*   `s"{true => ${f(true)}, false => ${f(false)}}"`
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+*   `table.`
+*     `map { a => s"$a => ${f(a)}" }.`
+*     `mkString("{", ", ", "}")`
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    `table.`
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"`$a => ${f(a)}`" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      `mkString("{", ", ", "}")`
+}
+```
+
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A] = ???
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  `def table: List[A] = ???`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+* def table: List[A]` = ???`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+case class =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*&#x200B;`case class =>>`[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+*&#x200B;`trait =>>[A, C]`(f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C](f: A => C) extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+// `error: traits or objects may not have parameters`
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+*trait =>>[A, C]`(f: A => C)` extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  override def apply(a: A) =
+    f(a)
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  override def apply(a: A) =
+    `f(a)`
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* `override def apply(a: A) =`
+*   `f(a)`
+*
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[A]
+
+  override def toString =
+    table.
+      map { a => s"$a => ${`f(a)`}" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* def table: `List[A]`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+* def table: `List[(A, C)]`
+
+  override def toString =
+    table.
+      map { a => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { `a` => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { `case (a, c)` => s"$a => ${f(a)}" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-rm[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { case (a, c) => s"$a => `${f(a)}`" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+*     map { case (a, c) => s"$a => `$c`" }.
+      mkString("{", ", ", "}")
+}
+```
+]
+
+---
+
+## `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
 }
 ```
 
@@ -1309,13 +1959,114 @@ def fun[A, C](
 ## `Unit =>> C`
 
 ```scala
-def unit[C](f: Unit => C): (Unit =>> C) = fun(
-  eval     = f,
+case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 
-  values   = List(() -> f()),
+  override def apply(u: Unit) =
+    f()
 
-  shrinker = shrinkC => shrinkC(f()).map(c => unit(_ => c))
-)
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+
+---
+
+## `Unit =>> C`
+
+.diff-rm[
+```scala
+*case class UnitFun[C](f: Unit => C) extends (Unit `=>` C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+.diff-add[
+```scala
+*case class UnitFun[C](f: Unit => C) extends (Unit `=>>` C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def toString =
+    s"{() => ${f()}}"
+}
+```
+]
+
+
+---
+
+## `Unit =>> C`
+
+.diff-rm[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+* `override def toString =`
+*   `s"{() => ${f()}}"`
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+* `override def table =`
+*   `List(() -> f())`
+}
+```
+]
+
+---
+
+## `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(`() -> f()`)
+}
+```
+
+
+---
+
+## `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+}
 ```
 
 ---
@@ -1328,8 +2079,6 @@ val propUnit = forAll { (f: Unit => Int) =>
 }
 ```
 
---
-
 ```scala
 validate(propUnit)
 // ✖ Failed with:
@@ -1338,15 +2087,831 @@ validate(propUnit)
 
 ---
 
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  `Arbitrary[Unit => C]` {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    `Gen.function1[Unit, C]`(arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `Unit =>> C`
+
+```scala
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      `map(f => UnitFun(f))`
+  }
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: {() => 1862882517}
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1862882517}`
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+*
+* `def shrink: Stream[A =>> C]`
+}
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink: Stream[A =>> C]
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+}
+```
+
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+*
+* `override def shrink =`
+*   `shrink(f()).`
+*     `map(c => UnitFun(_ => c))`
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    `shrink(f())`.
+      map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    shrink(f()).
+      map(c => `UnitFun(_ => c)`)
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    `shrink(f())`.
+      map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink: Stream[A =>> C]
+}
+```
+
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+* def shrink(`shrinkC: C => Stream[C]`): Stream[A =>> C]
+}
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+trait =>>[A, C] extends (A => C) {
+
+  def table: List[(A, C)]
+
+  override def toString =
+    table.
+      map { case (a, c) => s"$a => $c" }.
+      mkString("{", ", ", "}")
+
+  def shrink(shrinkC: C => Stream[C]): Stream[A =>> C]
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink =
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+}
+```
+
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+* override def shrink(`shrinkC: C => Stream[C]`) =
+    shrink(f()).
+      map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+*   `shrink(f())`.
+      map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+*   `shrinkC(f())`.
+      map(c => UnitFun(_ => c))
+}
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinkC(f()).
+      map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case UnitFun(f) =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+*   case `UnitFun(f)` =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+*   case `f: UnitFun[C]` =>
+      shrink(f()).
+        map(c => UnitFun(_ => c))
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+*     `shrink(f()).`
+*       `map(c => UnitFun(_ => c))`
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+*     `f.shrink(shrink[C])`
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `Unit =>> C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+
+
+
+---
+
+
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: {() => 1}
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+implicit def shrinkUnit[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+*implicit def `shrinkUnit`[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+*implicit def `shrinkFun`[C: Shrink] =
+  Shrink[Unit => C] {
+    case f: UnitFun[C] =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[Unit => C] {
+*   case f: `UnitFun[C]` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[Unit => C] {
+*   case f: `(Unit =>> C)` =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+implicit def shrinkFun[C: Shrink] =
+  Shrink[`Unit` => C] {
+    case f: (`Unit` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+*implicit def shrinkFun[`A, `C: Shrink] =
+  Shrink[Unit => C] {
+    case f: (Unit =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-rm[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+* Shrink[`Unit` => C] {
+*   case f: (`Unit` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+.diff-add[
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+* Shrink[`A` => C] {
+*   case f: (`A` =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+]
+
+---
+
+## Shrinking `A =>> C`
+
+```scala
+implicit def shrinkFun[A, C: Shrink] =
+  Shrink[A => C] {
+    case f: (A =>> C) =>
+      f.shrink(shrink[C])
+
+    case _          =>
+      Stream.empty
+  }
+```
+
+---
+
 ## Generating `A =>> C`
 
 ```scala
-implicit def arbFun[A: Cogen, C: Arbitrary] =
-  Arbitrary[A => C] {
-    Gen.function1[A, C](arbitrary[C]).
-      map(???)
+implicit def arbUnitFun[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
   }
 ```
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+*implicit def `arbUnitFun`[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def `arbFun`[C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbFun[C: Arbitrary] =
+  Arbitrary[`Unit` => C] {
+    Gen.function1[`Unit`, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbFun[`A`, C: Arbitrary] =
+  Arbitrary[Unit => C] {
+    Gen.function1[Unit, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+*implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[`Unit` => C] {
+    Gen.function1[`Unit`, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[`A` => C] {
+*   Gen.function1[`A`, C](arbitrary[C]).
+      map(f => UnitFun(f))
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`f => UnitFun(f)`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`???`)
+  }
+```
+]
 
 ---
 
@@ -1367,6 +2932,143 @@ object Argument {
 ## Generating `A =>> C`
 
 ```scala
+trait `Argument[A]` {
+  def build[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def `build`[C](f: A => C): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def build[C](`f: A => C`): A =>> C
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+trait Argument[A] {
+  def build[C](f: A => C): `A =>> C`
+}
+
+object Argument {
+  def apply[A](implicit arg: Argument[A]): Argument[A] = arg
+}
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-rm[
+```scala
+implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`???`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+implicit def arbFun[A, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+*     map(`Argument[A].build`)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbFun[A`: Argument`, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbFun[A: Argument, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+
+---
+
+## Generating `A =>> C`
+
+```scala
+implicit def arbFun[A: Argument, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+// `error: could not find implicit value for parameter co1: Cogen[A]`
+```
+
+---
+
+## Generating `A =>> C`
+
+.diff-add[
+```scala
+*implicit def arbFun[A: Argument`: Cogen`, C: Arbitrary] =
+  Arbitrary[A => C] {
+    Gen.function1[A, C](arbitrary[C]).
+      map(Argument[A].build)
+  }
+```
+]
+
+---
+
+## Generating `A =>> C`
+
+```scala
 implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
   Arbitrary[A => C] {
     Gen.function1[A, C](arbitrary[C]).
@@ -1379,9 +3081,11 @@ implicit def arbFun[A: Argument: Cogen, C: Arbitrary] =
 ## Generating `Unit =>> C`
 
 ```scala
-implicit def argUnit = new Argument[Unit] {
-  override def build[C](f: Unit => C) = unit(f)
-}
+implicit def argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) =
+      UnitFun(f)
+  }
 ```
 
 ---
@@ -1389,48 +3093,363 @@ implicit def argUnit = new Argument[Unit] {
 ## Generating `Unit =>> C`
 
 ```scala
-val propUnit = forAll { (f: Unit => Int) =>
-  f() == 0
-}
-```
-
---
-
-```scala
-validate(propUnit)
-// ✖ Failed with:
-//  - ARG_0: {() => 1862882517}
+implicit def argUnit =
+  new `Argument[Unit]` {
+    override def build[C](f: Unit => C) =
+      UnitFun(f)
+  }
 ```
 
 ---
 
-## Shrinking `A =>> C`
+## Generating `Unit =>> C`
 
 ```scala
-implicit def shrinkFunction[A, C: Shrink] = Shrink[A => C] {
-
-  case f: (A =>> C) => f.shrink(shrink[C])
-
-  case _            => Stream.empty
-}
+implicit def argUnit =
+  new Argument[Unit] {
+    override def `build`[C](f: Unit => C) =
+      UnitFun(f)
+  }
 ```
 
 ---
 
-## Shrinking `A =>> C`
+## Generating `Unit =>> C`
+
+```scala
+implicit def argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) =
+      `UnitFun`(f)
+  }
+```
+
+---
+
+## `Unit =>> C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
   f() == 0
 }
 ```
-
---
 
 ```scala
 validate(propUnit)
 // ✖ Failed with:
 //  - ARG_0: {() => 1}
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: {() => 1}`
+```
+
+---
+
+## Simplifying creation
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    f()
+
+  override def table =
+    List(() -> f())
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinkC(f()).
+      map(c => UnitFun(_ => c))
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+case class UnitFun[C](f: Unit => C) extends (Unit =>> C) {
+
+  override def apply(u: Unit) =
+    `f()`
+
+  override def table =
+    `List(() -> f())`
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    `shrinkC(f()).`
+      `map(c => UnitFun(_ => c))`
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  `eval    : A => C`,
+  values  : => List[(A, C)],
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def `apply`(a: A) =
+    `eval(a)`
+
+  override def table =
+    values
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  `values  : => List[(A, C)]`,
+  shrinker: (C => Stream[C]) => Stream[A =>> C]
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def `table` =
+    `values`
+
+  override def shrink(shrinkC: C => Stream[C]) =
+    shrinker(shrinkC)
+}
+```
+
+---
+
+## Simplifying creation
+
+```scala
+def fun[A, C](
+  eval    : A => C,
+  values  : => List[(A, C)],
+  `shrinker: (C => Stream[C]) => Stream[A =>> C]`
+) = new (A =>> C) {
+
+  override def apply(a: A) =
+    eval(a)
+
+  override def table =
+    values
+
+  override def `shrink`(shrinkC: C => Stream[C]) =
+    `shrinker(shrinkC)`
+}
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def `unit`[C](f: Unit => C): `(Unit =>> C)` = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](`f: Unit => C`): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  `eval` = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = `f`,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  `values` = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(`() -> f()`),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  `shrinker` = shrinkC =>
+    shrinkC(f()).
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    `shrinkC(f())`.
+      map(c => unit(_ => c))
+)
+```
+
+---
+
+## `Unit =>> C`
+
+```scala
+def unit[C](f: Unit => C): (Unit =>> C) = fun(
+
+  eval = f,
+
+  values = List(() -> f()),
+
+  shrinker = shrinkC =>
+    shrinkC(f()).
+      map(`c => unit(_ => c)`)
+)
 ```
 
 ---
@@ -1446,9 +3465,9 @@ def bool[C](f: Boolean => C): (Boolean =>> C) = {
   }
 
   fun(
-    eval     = f,
+    eval = f,
 
-    values   = List(true -> f(true), false -> f(false)),
+    values = List(true -> f(true), false -> f(false)),
 
     shrinker = shrinkC =>
       shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
@@ -1462,9 +3481,353 @@ def bool[C](f: Boolean => C): (Boolean =>> C) = {
 ## `Boolean =>> C`
 
 ```scala
-implicit def argBool = new Argument[Boolean] {
-  override def build[C](f: Boolean => C) = bool(f)
+def `bool`[C](f: Boolean => C): `(Boolean =>> C)` = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
 }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](`f: Boolean => C`): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    `eval` = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = `f`,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    `values` = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(`true -> f(true)`, false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), `false -> f(false)`),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    `shrinker` = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      `shrinkC(f(true))`.map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(`b => copy(onTrue = b)`) #:::
+      shrinkC(f(false)).map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      `shrinkC(f(false))`.map(b => copy(onFalse = b))
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+def bool[C](f: Boolean => C): (Boolean =>> C) = {
+
+  def copy(onTrue: C = f(true), onFalse: C = f(false)) = bool {
+    case true  => onTrue
+    case false => onFalse
+  }
+
+  fun(
+    eval = f,
+
+    values = List(true -> f(true), false -> f(false)),
+
+    shrinker = shrinkC =>
+      shrinkC(f(true)).map(b => copy(onTrue = b)) #:::
+      shrinkC(f(false)).map(`b => copy(onFalse = b)`)
+  )
+}
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit def argBool =
+  new Argument[Boolean] {
+    override def build[C](f: Boolean => C) =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit def argBool =
+  new `Argument[Boolean]` {
+    override def build[C](f: Boolean => C) =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit def argBool =
+  new Argument[Boolean] {
+    override def `build[C](f: Boolean => C)` =
+      bool(f)
+  }
+```
+
+---
+
+## `Boolean =>> C`
+
+```scala
+implicit def argBool =
+  new Argument[Boolean] {
+    override def build[C](f: Boolean => C) =
+      `bool`(f)
+  }
+```
+
+
+
+---
+
+## `Boolean =>> C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - ARG_0: {true => 0, false => 1}
 ```
 
 ---
@@ -1477,12 +3840,10 @@ val propBool = forAll { (f: Boolean => Int) =>
 }
 ```
 
---
-
 ```scala
 validate(propBool)
 // ✖ Failed with:
-//  - ARG_0: {true => 0, false => 1}
+//  - `ARG_0: {true => 0, false => 1}`
 ```
 
 ---
@@ -1586,10 +3947,11 @@ def imap[A, B, C](
 ## Generating `Answer =>> C`
 
 ```scala
-implicit val argAnswer = new Argument[Answer] {
-  override def build[C](f: Answer => C) =
-    imap(toBool, fromBool, bool(fromBool andThen f))
-}
+implicit val argAnswer =
+  new Argument[Answer] {
+    override def build[C](f: Answer => C) =
+      imap(toBool, fromBool, bool(fromBool andThen f))
+  }
 ```
 
 ---
@@ -1790,9 +4152,10 @@ object Argument {
 ## Partial `A =>> C`
 
 ```scala
-implicit def argUnit = new Argument[Unit] {
-  override def build[C](f: Unit => C) = unit(f)
-}
+implicit def argUnit =
+  new Argument[Unit] {
+    override def build[C](f: Unit => C) = unit(f)
+  }
 ```
 
 ---
