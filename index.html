@@ -371,12 +371,17 @@ val propUnit = forAll { (f: Unit => Int) =>
 }
 ```
 
-
 ```scala
 validate(propUnit)
 // ✖ Failed with:
 //  - `ARG_0: <function>`
 ```
+
+---
+
+## Showing `Unit => C`
+
+.center[![Linked List](img/unitfun.svg)]
 
 ---
 
@@ -499,10 +504,50 @@ case class UnitFun[C](f: Unit => C) extends (Unit => C) {
 }
 ```
 
+---
+
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - ARG_0: <function>
+```
 
 ---
 
-## Showing `Unit => C`
+## Testing `Unit => C`
+
+```scala
+val propUnit = forAll { (f: Unit => Int) =>
+  f() == 0
+}
+```
+
+
+```scala
+validate(propUnit)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+---
+
+## Generating `Unit => C`
+
+.center[![Linked List](img/arb-unitfun.svg)]
+
+
+---
+
+## Generating `Unit => C`
 
 ```scala
 implicit def arbUnitFun[C: Arbitrary] =
@@ -514,7 +559,7 @@ implicit def arbUnitFun[C: Arbitrary] =
 
 ---
 
-## Showing `Unit => C`
+## Generating `Unit => C`
 
 ```scala
 implicit def arbUnitFun[C: Arbitrary] =
@@ -526,7 +571,7 @@ implicit def arbUnitFun[C: Arbitrary] =
 
 ---
 
-## Showing `Unit => C`
+## Generating `Unit => C`
 
 ```scala
 implicit def arbUnitFun[C: Arbitrary] =
@@ -538,7 +583,7 @@ implicit def arbUnitFun[C: Arbitrary] =
 
 ---
 
-## Showing `Unit => C`
+## Generating `Unit => C`
 
 ```scala
 implicit def arbUnitFun[C: Arbitrary] =
@@ -551,7 +596,7 @@ implicit def arbUnitFun[C: Arbitrary] =
 
 ---
 
-## Showing `Unit => C`
+## Generating `Unit => C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
@@ -567,7 +612,7 @@ validate(propUnit)
 
 ---
 
-## Showing `Unit => C`
+## Generating `Unit => C`
 
 ```scala
 val propUnit = forAll { (f: Unit => Int) =>
@@ -949,6 +994,39 @@ case class BoolFun[C](f: Boolean => C) extends (Boolean => C) {
 ## Showing `Boolean => C`
 
 ```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - ARG_0: <function>
+```
+
+---
+
+## Showing `Boolean => C`
+
+```scala
+val propBool = forAll { (f: Boolean => Int) =>
+  f(true) == f(false)
+}
+```
+
+```scala
+validate(propBool)
+// ✖ Failed with:
+//  - `ARG_0: <function>`
+```
+
+
+---
+
+## Showing `Boolean => C`
+
+```scala
 implicit def arbBoolean[C: Arbitrary] =
   Arbitrary[Boolean => C] {
     Gen.function1[Boolean, C](arbitrary[C]).
@@ -958,7 +1036,7 @@ implicit def arbBoolean[C: Arbitrary] =
 
 ---
 
-## Showing `Boolean => C`
+## Generating `Boolean => C`
 
 ```scala
 implicit def arbBoolean[C: Arbitrary] =
@@ -970,7 +1048,7 @@ implicit def arbBoolean[C: Arbitrary] =
 
 ---
 
-## Showing `Boolean => C`
+## Generating `Boolean => C`
 
 ```scala
 implicit def arbBoolean[C: Arbitrary] =
@@ -982,7 +1060,7 @@ implicit def arbBoolean[C: Arbitrary] =
 
 ---
 
-## Showing `Boolean => C`
+## Generating `Boolean => C`
 
 ```scala
 implicit def arbBoolean[C: Arbitrary] =
@@ -995,7 +1073,7 @@ implicit def arbBoolean[C: Arbitrary] =
 
 ---
 
-## Showing `Boolean => C`
+## Generating `Boolean => C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -1011,7 +1089,7 @@ validate(propBool)
 
 ---
 
-## Showing `Boolean => C`
+## Generating `Boolean => C`
 
 ```scala
 val propBool = forAll { (f: Boolean => Int) =>
@@ -1244,8 +1322,6 @@ val propBool = forAll { (f: Boolean => Int) =>
 }
 ```
 
---
-
 ```scala
 validate(propBool)
 // ✖ Failed with:
@@ -1261,7 +1337,6 @@ val propBool = forAll { (f: Boolean => Int) =>
   f(true) == f(false)
 }
 ```
-
 
 ```scala
 validate(propBool)
